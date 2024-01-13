@@ -78,9 +78,6 @@ variable "network_manage_default_network_acl" {
 
 variable "network_security_groups" {
   default = {
-    "ingress-worker" = {
-      description = "This is SG for Boundary Ingress Worker"
-    },
     "egress-worker" = {
       description = "This is SG for Boundary Egress Worker"
     }
