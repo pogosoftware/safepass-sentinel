@@ -1,16 +1,10 @@
-variable "tfc_organization" {
+variable "hcp_orgranization_id" {
   description = "The name of TFC orgranisation"
   type        = string
 }
 
-variable "tfc_network_workspace_name" {
+variable "hcp_network_workspace_name" {
   description = "The name of network TFC workspace"
-}
-
-variable "boundary_workers_ingress_name" {
-  default     = "boundary-ingress-worker"
-  description = "The name of Boundary ingress worker"
-  type        = string
 }
 
 variable "boundary_workers_egress_name" {

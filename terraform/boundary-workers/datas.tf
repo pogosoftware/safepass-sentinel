@@ -2,9 +2,9 @@ data "terraform_remote_state" "network" {
   backend = "remote"
 
   config = {
-    organization = var.tfc_organization
+    organization = var.hcp_orgranization_id
     workspaces = {
-      name = var.tfc_network_workspace_name
+      name = var.hcp_network_workspace_name
     }
   }
 }
