@@ -80,6 +80,9 @@ variable "network_security_groups" {
   default = {
     "egress-worker" = {
       description = "This is SG for Boundary Egress Worker"
+    },
+    "client-vpn-endpoint" = {
+      description = "This is SG for AWS VPN Client"
     }
   }
   description = "The names of the security groups"
