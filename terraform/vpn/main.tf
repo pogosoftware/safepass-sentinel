@@ -108,37 +108,37 @@ resource "hcp_vault_secrets_app" "vpn" {
 
 resource "hcp_vault_secrets_secret" "ca_cert" {
   app_name     = hcp_vault_secrets_app.vpn.app_name
-  secret_name  = "ca.pem"
+  secret_name  = "ca_cert"
   secret_value = tls_self_signed_cert.ca.cert_pem
 }
 
 resource "hcp_vault_secrets_secret" "ca_key" {
   app_name     = hcp_vault_secrets_app.vpn.app_name
-  secret_name  = "ca.key"
+  secret_name  = "ca_key"
   secret_value = tls_private_key.ca.private_key_pem
 }
 
 resource "hcp_vault_secrets_secret" "client_cert" {
   app_name     = hcp_vault_secrets_app.vpn.app_name
-  secret_name  = "client.domain.ltd.pem"
+  secret_name  = "client_cert"
   secret_value = tls_locally_signed_cert.client.cert_pem
 }
 
 resource "hcp_vault_secrets_secret" "client_key" {
   app_name     = hcp_vault_secrets_app.vpn.app_name
-  secret_name  = "client.domain.ltd.key"
+  secret_name  = "client_key"
   secret_value = tls_private_key.client.private_key_pem
 }
 
 resource "hcp_vault_secrets_secret" "server_cert" {
   app_name     = hcp_vault_secrets_app.vpn.app_name
-  secret_name  = "server.pem"
+  secret_name  = "server_cert"
   secret_value = tls_locally_signed_cert.server.cert_pem
 }
 
 resource "hcp_vault_secrets_secret" "server_key" {
   app_name     = hcp_vault_secrets_app.vpn.app_name
-  secret_name  = "server.key"
+  secret_name  = "server_key"
   secret_value = tls_private_key.server.private_key_pem
 }
 
