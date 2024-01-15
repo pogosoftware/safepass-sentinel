@@ -22,16 +22,6 @@ resource "tls_self_signed_cert" "ca" {
   ]
 }
 
-# resource "local_file" "ca_key" {
-#   content  = tls_private_key.ca.private_key_pem
-#   filename = "${path.module}/certs/ca.key"
-# }
-
-# resource "local_file" "ca_cert" {
-#   content  = tls_self_signed_cert.ca.cert_pem
-#   filename = "${path.module}/certs/ca.pem"
-# }
-
 ####################################################################################################
 ### CLIENT CERTIFICATE
 ####################################################################################################
@@ -63,16 +53,6 @@ resource "tls_locally_signed_cert" "client" {
   ]
 }
 
-# resource "local_file" "client_key" {
-#   content  = tls_private_key.client.private_key_pem
-#   filename = "${path.module}/certs/client.domain.ltd.key"
-# }
-
-# resource "local_file" "client_cert" {
-#   content  = tls_locally_signed_cert.client.cert_pem
-#   filename = "${path.module}/certs/client.domain.ltd.pem"
-# }
-
 ####################################################################################################
 ### SERVER CERTIFICATE
 ####################################################################################################
@@ -103,16 +83,6 @@ resource "tls_locally_signed_cert" "server" {
   ]
 }
 
-# resource "local_file" "server_key" {
-#   content  = tls_private_key.server.private_key_pem
-#   filename = "${path.module}/certs/server.key"
-# }
-
-# resource "local_file" "server_cert" {
-#   content  = tls_locally_signed_cert.server.cert_pem
-#   filename = "${path.module}/certs/server.pem"
-# }
-
 ####################################################################################################
 ### ACM
 ####################################################################################################
@@ -126,6 +96,50 @@ resource "aws_acm_certificate" "client" {
   private_key       = tls_private_key.client.private_key_pem
   certificate_body  = tls_locally_signed_cert.client.cert_pem
   certificate_chain = tls_self_signed_cert.ca.cert_pem
+}
+
+####################################################################################################
+### VAULT SECRETS
+####################################################################################################
+resource "hcp_vault_secrets_app" "vpn" {
+  app_name    = "vpn"
+  description = "This app contains ssh keys for AWS Client VPN"
+}
+
+resource "hcp_vault_secrets_secret" "ca_cert" {
+  app_name     = hcp_vault_secrets_app.vpn.app_name
+  secret_name  = "ca.pem"
+  secret_value = tls_self_signed_cert.ca.cert_pem
+}
+
+resource "hcp_vault_secrets_secret" "ca_key" {
+  app_name     = hcp_vault_secrets_app.vpn.app_name
+  secret_name  = "ca.key"
+  secret_value = tls_private_key.ca.private_key_pem
+}
+
+resource "hcp_vault_secrets_secret" "client_cert" {
+  app_name     = hcp_vault_secrets_app.vpn.app_name
+  secret_name  = "client.domain.ltd.pem"
+  secret_value = tls_locally_signed_cert.client.cert_pem
+}
+
+resource "hcp_vault_secrets_secret" "client_key" {
+  app_name     = hcp_vault_secrets_app.vpn.app_name
+  secret_name  = "client.domain.ltd.key"
+  secret_value = tls_private_key.client.private_key_pem
+}
+
+resource "hcp_vault_secrets_secret" "server_cert" {
+  app_name     = hcp_vault_secrets_app.vpn.app_name
+  secret_name  = "server.pem"
+  secret_value = tls_locally_signed_cert.server.cert_pem
+}
+
+resource "hcp_vault_secrets_secret" "server_key" {
+  app_name     = hcp_vault_secrets_app.vpn.app_name
+  secret_name  = "server.key"
+  secret_value = tls_private_key.server.private_key_pem
 }
 
 ####################################################################################################
