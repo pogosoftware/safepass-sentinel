@@ -1,0 +1,10 @@
+terraform {
+  required_version = "1.6.6"
+
+  required_providers {
+    hcp = {
+      source  = "hashicorp/hcp"
+      version = "0.79.0"
+    }
+  }
+}
