@@ -6,5 +6,9 @@ terraform {
       source  = "hashicorp/hcp"
       version = "0.79.0"
     }
+    boundary = {
+      source  = "hashicorp/boundary"
+      version = "1.1.12"
+    }
   }
 }

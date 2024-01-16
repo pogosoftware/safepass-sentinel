@@ -54,3 +54,23 @@ resource "hcp_boundary_cluster" "this" {
   password   = random_string.boundary_password.result
   tier       = var.hcp_cloud_boundary_tier
 }
+
+####################################################################################################
+### HCP BOUNDARY RESOURCES
+####################################################################################################
+resource "boundary_scope" "org" {
+  name                     = var.hcp_boundary_org_name
+  description              = var.hcp_boundary_org_description
+  scope_id                 = "global"
+  auto_create_admin_role   = true
+  auto_create_default_role = true
+}
+
+resource "boundary_scope" "project" {
+  name        = var.hcp_boundary_project_name
+  description = var.hcp_boundary_project_description
+
+  scope_id                 = boundary_scope.org.id
+  auto_create_admin_role   = true
+  auto_create_default_role = true
+}

@@ -68,3 +68,30 @@ variable "hcp_cloud_boundary_tier" {
   description = "The tier that the HCP Boundary cluster will be provisioned as, 'Standard' or 'Plus'"
   type        = string
 }
+
+####################################################################################################
+### HCP BOUNDARY RESOURCES
+####################################################################################################
+variable "hcp_boundary_org_name" {
+  default     = "Pogosoftware"
+  description = "The name of Boudary organization"
+  type        = string
+}
+
+variable "hcp_boundary_org_description" {
+  default     = "Pogosoftware"
+  description = "The description of Bondary orgranization"
+  type        = string
+}
+
+variable "hcp_boundary_project_name" {
+  default     = "develop"
+  description = "The name of Boudary project"
+  type        = string
+}
+
+variable "hcp_boundary_project_description" {
+  default     = "The develop resources"
+  description = "The description of Bondary project"
+  type        = string
+}
