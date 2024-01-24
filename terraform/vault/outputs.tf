@@ -1,6 +1,11 @@
 ####################################################################################################
 ### HCP CLOUD
 ####################################################################################################
+output "vault_namespace" {
+  description = "The name of vault namespace"
+  value       = var.vault_namespace
+}
+
 output "vault_secret_app_name" {
   description = "The name od Vault Secrets app"
   value       = hcp_vault_secrets_app.vault.app_name

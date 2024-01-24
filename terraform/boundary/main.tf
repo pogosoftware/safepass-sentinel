@@ -19,15 +19,15 @@ resource "boundary_scope" "project" {
 }
 
 resource "boundary_credential_store_vault" "certificates_store" {
-  name      = "certificates-store"
+  name      = "vault-ssh-develop-store"
   address   = local.vault_public_endpoint_url
   token     = local.vault_client_token
   scope_id  = boundary_scope.project.id
-  namespace = var.boundary_vault_namespace
+  namespace = local.vault_namespace
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "certificates_library" {
-  name                = "certificates-library"
+  name                = "vault-ssh-develop-library"
   credential_store_id = boundary_credential_store_vault.certificates_store.id
   path                = "ssh-client-signer/sign/boundary-client"
   username            = "ubuntu"

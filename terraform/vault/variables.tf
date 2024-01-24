@@ -14,6 +14,11 @@ variable "hcp_cloud_workspace_name" {
 ####################################################################################################
 ### VAULT
 ####################################################################################################
+variable "vault_namespace" {
+  description = "The name of vault namespace"
+  type        = string
+}
+
 variable "vault_ssh_mount_path" {
   default     = "ssh-client-signer"
   description = "The path to SSH Vault mount"
