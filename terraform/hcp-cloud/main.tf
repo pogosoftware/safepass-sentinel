@@ -16,7 +16,7 @@ resource "hcp_vault_cluster" "this" {
 }
 
 resource "hcp_vault_cluster_admin_token" "this" {
-  cluster_id = hcp_vault_cluster.this.id
+  cluster_id = hcp_vault_cluster.this.cluster_id
 }
 
 ####################################################################################################
@@ -46,12 +46,12 @@ resource "hcp_vault_secrets_secret" "vault_cluster_admin_token" {
 
 ## HCP Boundary
 resource "random_string" "boundary_username" {
-  length           = 16
-  special          = false
-  override_special = "/@£$"
+  length  = 16
+  special = false
+  upper   = false
 }
 
-resource "random_string" "boundary_password" {
+resource "random_password" "boundary_password" {
   length           = 32
   special          = true
   override_special = "/@£$"
