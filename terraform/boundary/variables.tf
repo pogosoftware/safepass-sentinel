@@ -42,3 +42,9 @@ variable "hcp_boundary_project_description" {
   description = "The description of Bondary project"
   type        = string
 }
+
+variable "boundary_vault_namespace" {
+  default     = "admin"
+  description = "The name of Vault namespace"
+  type        = string
+}

@@ -19,10 +19,11 @@ resource "boundary_scope" "project" {
 }
 
 resource "boundary_credential_store_vault" "certificates_store" {
-  name     = "certificates-store"
-  address  = local.vault_public_endpoint_url
-  token    = local.vault_client_token
-  scope_id = boundary_scope.project.id
+  name      = "certificates-store"
+  address   = local.vault_public_endpoint_url
+  token     = local.vault_client_token
+  scope_id  = boundary_scope.project.id
+  namespace = var.boundary_vault_namespace
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "certificates_library" {
