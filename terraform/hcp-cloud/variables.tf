@@ -34,7 +34,7 @@ variable "hcp_cloud_cidr_block" {
 }
 
 variable "hcp_cloud_vault_cluster_id" {
-  default     = "sefapass-sentinel-dev"
+  default     = "sefapass-sentinel"
   description = "The name of Valut cluster"
   type        = string
 }
@@ -61,7 +61,7 @@ variable "boundary_username" {
 }
 
 variable "hcp_cloud_boundary_cluster_id" {
-  default     = "safepass-sentinel-dev"
+  default     = "safepass-sentinel"
   description = "The ID of the Boundary cluster"
   type        = string
 }

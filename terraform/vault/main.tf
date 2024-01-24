@@ -2,16 +2,21 @@
 ### VAULT SSH RESOURCES
 ####################################################################################################
 resource "tls_private_key" "vault" {
-  algorithm   = "ECDSA"
-  ecdsa_curve = "P384"
+  algorithm = "ED25519"
+}
+
+resource "vault_namespace" "this" {
+  path = var.vault_namespace
 }
 
 resource "vault_mount" "ssh" {
-  path = var.vault_ssh_mount_path
-  type = "ssh"
+  namespace = vault_namespace.this.namespace
+  path      = var.vault_ssh_mount_path
+  type      = "ssh"
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh" {
+  namespace            = vault_namespace.this.namespace
   backend              = vault_mount.ssh.path
   generate_signing_key = false
   public_key           = tls_private_key.vault.public_key_openssh
@@ -19,7 +24,8 @@ resource "vault_ssh_secret_backend_ca" "ssh" {
 }
 
 resource "vault_policy" "boundary_controller" {
-  name = "boundary-controller"
+  namespace = vault_namespace.this.namespace
+  name      = "boundary-controller"
 
   policy = <<EOT
 path "auth/token/lookup-self" {
@@ -44,7 +50,8 @@ EOT
 }
 
 resource "vault_policy" "ssh" {
-  name = "ssh"
+  namespace = vault_namespace.this.namespace
+  name      = "ssh"
 
   policy = <<EOT
 path "${var.vault_ssh_mount_path}/issue/${var.vault_ssh_role_name}" {
@@ -58,6 +65,7 @@ EOT
 }
 
 resource "vault_ssh_secret_backend_role" "boundary_client" {
+  namespace               = vault_namespace.this.namespace
   name                    = var.vault_ssh_role_name
   backend                 = vault_mount.ssh.path
   key_type                = "ca"
@@ -71,6 +79,7 @@ resource "vault_ssh_secret_backend_role" "boundary_client" {
 }
 
 resource "vault_token" "boundary" {
+  namespace         = vault_namespace.this.namespace
   no_default_policy = true
   policies          = ["boundary-controller", "ssh"]
   no_parent         = true
