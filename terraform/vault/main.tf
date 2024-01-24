@@ -2,8 +2,7 @@
 ### VAULT SSH RESOURCES
 ####################################################################################################
 resource "tls_private_key" "vault" {
-  algorithm   = "ECDSA"
-  ecdsa_curve = "P384"
+  algorithm   = "ED25519"
 }
 
 resource "vault_mount" "ssh" {
