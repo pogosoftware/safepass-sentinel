@@ -6,6 +6,19 @@ output "hcp_cloud_secret_app_name" {
   value       = hcp_vault_secrets_app.hcp_cloud.app_name
 }
 
+# ####################################################################################################
+# ### AWS SSM
+# ####################################################################################################
+output "ssm_hcp_client_id_name" {
+  description = "The name of SSM HCP client ID param"
+  value       = var.ssm_hcp_client_id_name
+}
+
+output "ssm_hcp_client_secret_name" {
+  description = "The name of SSM HCP client secret param"
+  value       = var.ssm_hcp_client_secret_name
+}
+
 ####################################################################################################
 ### HCP BOUNDARY
 ####################################################################################################

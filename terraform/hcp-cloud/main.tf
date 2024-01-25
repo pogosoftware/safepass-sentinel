@@ -1,4 +1,34 @@
 # ####################################################################################################
+# ### HCP SERVICE PRINCIPAL
+# ####################################################################################################
+resource "hcp_service_principal" "viewer" {
+  name = "aws-viewer"
+}
+
+resource "hcp_service_principal_key" "viewer" {
+  service_principal = hcp_service_principal.viewer.resource_name
+}
+
+resource "hcp_project_iam_policy" "project_policy" {
+  policy_data = data.hcp_iam_policy.viewer.policy_data
+}
+
+# ####################################################################################################
+# ### AWS SSM
+# ####################################################################################################
+resource "aws_ssm_parameter" "hcp_client_id" {
+  name  = var.ssm_hcp_client_id_name
+  type  = "String"
+  value = hcp_service_principal_key.viewer.client_id
+}
+
+resource "aws_ssm_parameter" "hcp_client_secret" {
+  name  = var.ssm_hcp_client_secret_name
+  type  = "SecureString"
+  value = hcp_service_principal_key.viewer.client_secret
+}
+
+# ####################################################################################################
 # ### HCP VAULT CLUSTER
 # ####################################################################################################
 resource "hcp_hvn" "this" {
