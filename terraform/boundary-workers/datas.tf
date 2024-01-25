@@ -26,3 +26,12 @@ data "aws_ami" "ubuntu" {
 
   owners = ["099720109477"] # Canonical
 }
+
+data "aws_iam_policy_document" "ssm" {
+  statement {
+    sid       = "GetSSMParameters"
+    actions   = ["ssm:GetParameters"]
+    effect    = "Allow"
+    resources = ["*"]
+  }
+}
