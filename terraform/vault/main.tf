@@ -10,13 +10,13 @@ resource "vault_namespace" "this" {
 }
 
 resource "vault_mount" "ssh" {
-  namespace = vault_namespace.this.namespace
+  namespace = vault_namespace.this.path
   path      = var.vault_ssh_mount_path
   type      = "ssh"
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh" {
-  namespace            = vault_namespace.this.namespace
+  namespace            = vault_namespace.this.path
   backend              = vault_mount.ssh.path
   generate_signing_key = false
   public_key           = tls_private_key.vault.public_key_openssh
@@ -24,7 +24,7 @@ resource "vault_ssh_secret_backend_ca" "ssh" {
 }
 
 resource "vault_policy" "boundary_controller" {
-  namespace = vault_namespace.this.namespace
+  namespace = vault_namespace.this.path
   name      = "boundary-controller"
 
   policy = <<EOT
@@ -50,7 +50,7 @@ EOT
 }
 
 resource "vault_policy" "ssh" {
-  namespace = vault_namespace.this.namespace
+  namespace = vault_namespace.this.path
   name      = "ssh"
 
   policy = <<EOT
@@ -65,7 +65,7 @@ EOT
 }
 
 resource "vault_ssh_secret_backend_role" "boundary_client" {
-  namespace               = vault_namespace.this.namespace
+  namespace               = vault_namespace.this.path
   name                    = var.vault_ssh_role_name
   backend                 = vault_mount.ssh.path
   key_type                = "ca"
@@ -79,7 +79,7 @@ resource "vault_ssh_secret_backend_role" "boundary_client" {
 }
 
 resource "vault_token" "boundary" {
-  namespace         = vault_namespace.this.namespace
+  namespace         = vault_namespace.this.path
   no_default_policy = true
   policies          = ["boundary-controller", "ssh"]
   no_parent         = true
