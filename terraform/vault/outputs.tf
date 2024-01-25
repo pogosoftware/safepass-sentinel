@@ -3,7 +3,7 @@
 ####################################################################################################
 output "vault_namespace" {
   description = "The name of vault namespace"
-  value       = vault_namespace.this.path
+  value       = vault_namespace.this.path_fq
 }
 
 output "vault_secret_app_name" {
