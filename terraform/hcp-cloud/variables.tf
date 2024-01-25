@@ -6,6 +6,21 @@ variable "hcp_project_id" {
   type        = string
 }
 
+# ####################################################################################################
+# ### AWS SSM
+# ####################################################################################################
+variable "ssm_hcp_client_id_name" {
+  default     = "hcp_client_id"
+  description = "The name of SSM HCP client ID param"
+  type        = string
+}
+
+variable "ssm_hcp_client_secret_name" {
+  default     = "hcp_client_secret"
+  description = "The name of SSM HCP client secret param"
+  type        = string
+}
+
 ####################################################################################################
 ### HCP VAULT CLUSTER
 ####################################################################################################
