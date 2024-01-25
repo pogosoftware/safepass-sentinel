@@ -29,8 +29,8 @@ data "aws_ami" "ubuntu" {
 
 data "aws_iam_policy_document" "ssm" {
   statement {
-    sid       = "GetSSMParameters"
-    actions   = ["ssm:GetParameters"]
+    sid       = "GetSSMParameter"
+    actions   = ["ssm:GetParameter"]
     effect    = "Allow"
     resources = ["*"]
   }

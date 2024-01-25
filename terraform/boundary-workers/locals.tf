@@ -6,9 +6,11 @@ locals {
 
   user_data = <<-EOT
     #!/bin/bash
+    apt update
+    apt install -y awscli jq
 
-    export HCP_CLIENT_ID=$(aws ssm get-parameter --name "hcp_client_id" --query "Parameter.Value" --output text)
-    export HCP_CLIENT_SECRET=$(aws ssm get-parameter --name "hcp_client_secret" --with-decryption --query "Parameter.Value" --output text)
+    export HCP_CLIENT_ID=$(aws ssm get-parameter --name "hcp_client_id" --query "Parameter.Value" --output text --region eu-central-1)
+    export HCP_CLIENT_SECRET=$(aws ssm get-parameter --name "hcp_client_secret" --with-decryption --query "Parameter.Value" --output text --region eu-central-1)
     
     HCP_API_TOKEN=$(curl --location 'https://auth.hashicorp.com/oauth/token' \
     --header 'content-type: application/json' \
@@ -22,7 +24,7 @@ locals {
     curl \
     --location "https://api.cloud.hashicorp.com/secrets/2023-06-13/organizations/219ecfed-b7ce-49a3-a92a-6b323dcf9cd3/projects/d9720027-8bb1-4542-98a3-744da821d0cf/apps/vault/open" \
     --request GET \
-    --header "Authorization: Bearer $HCP_API_TOKEN" | jq --raw-output '.secrets.[] | select(.name | test("public_key_openssh")) | .version.value' > /etc/ssh/ca-key.pub
+    --header "Authorization: Bearer $HCP_API_TOKEN" | jq --raw-output '.secrets[] | select(.name | test("public_key_openssh")) | .version.value' > /etc/ssh/ca-key.pub
 
     chown 1000:1000 /etc/ssh/ca-key.pub
     chmod 644 /etc/ssh/ca-key.pub
