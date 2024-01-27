@@ -52,7 +52,7 @@ module "boundary_egress_workers" {
 
   image_id      = local.ami
   instance_type = var.boundary_workers_instance_type
-  ebs_optimized = true
+  ebs_optimized = false
   user_data     = base64encode(local.user_data)
   key_name      = aws_key_pair.ansible.key_name
 
