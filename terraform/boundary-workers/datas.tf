@@ -49,15 +49,6 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"] # Canonical
 }
 
-data "aws_iam_policy_document" "ssm" {
-  statement {
-    sid       = "GetSSMParameter"
-    actions   = ["ssm:GetParameter"]
-    effect    = "Allow"
-    resources = ["*"]
-  }
-}
-
 data "hcp_vault_secrets_secret" "boundary_username" {
   app_name    = data.terraform_remote_state.hcp_cloud.outputs.hcp_cloud_secret_app_name
   secret_name = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_username_secret_name
