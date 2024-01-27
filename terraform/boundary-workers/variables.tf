@@ -40,7 +40,7 @@ variable "boundary_workers_instance_type" {
 }
 
 variable "boundary_asg_min_size" {
-  default     = 0
+  default     = 2
   description = "The ASG min size"
   type        = number
 }
