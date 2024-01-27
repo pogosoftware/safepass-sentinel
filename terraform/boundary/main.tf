@@ -44,16 +44,17 @@ resource "boundary_auth_method" "password" {
   type     = "password"
 }
 
-resource "boundary_user" "admin" {
-  name     = "Admin"
-  scope_id = boundary_scope.org.id
-}
-
 resource "boundary_account_password" "admin" {
   auth_method_id = boundary_auth_method.password.id
-  name           = "Pogosoftware Admin"
+  name           = "Pogosoftware Admins"
   login_name     = "admin"
   password       = "$uper$ecure"
+}
+
+resource "boundary_user" "admin" {
+  name        = "admin"
+  account_ids = [boundary_account_password.admin.id]
+  scope_id    = boundary_scope.org.id
 }
 
 resource "boundary_group" "admin" {
