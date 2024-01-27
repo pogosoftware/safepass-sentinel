@@ -43,7 +43,6 @@ module "boundary_egress_workers" {
   health_check_type = "EC2"
 
   vpc_zone_identifier = [local.egress_worker_subnet_id]
-  security_groups     = [local.egress_worker_sg_id]
 
   # Launch template
   launch_template_use_name_prefix = true
@@ -60,6 +59,15 @@ module "boundary_egress_workers" {
   metadata_options = {
     http_tokens = "required"
   }
+
+  network_interfaces = [
+    {
+      delete_on_termination = true
+      description           = "eth0"
+      device_index          = 0
+      security_groups       = [local.egress_worker_sg_id]
+    }
+  ]
 
   tag_specifications = [
     {
