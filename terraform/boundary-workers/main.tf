@@ -2,8 +2,10 @@
 ### BOUNDARY
 ####################################################################################################
 resource "boundary_worker" "egress_worker" {
+  count = var.boundary_egress_workers_count
+
   scope_id                    = "global"
-  name                        = "bounday-egress-worker"
+  name                        = "bounday-egress-worker-${count.index}"
   worker_generated_auth_token = ""
 }
 
@@ -30,58 +32,35 @@ resource "aws_security_group_rule" "ingress_allow_ssh" {
   security_group_id = local.egress_worker_sg_id
 }
 
-module "boundary_egress_workers" {
-  source  = "terraform-aws-modules/autoscaling/aws"
-  version = "7.3.1"
+module "boundary_egress_worker" {
+  source  = "terraform-aws-modules/ec2-instance/aws"
+  version = "5.6.0"
 
-  use_name_prefix = true
-  name            = var.boundary_asg_name
+  count = var.boundary_egress_workers_count
 
-  min_size          = var.boundary_asg_min_size
-  max_size          = var.boundary_asg_max_size
-  desired_capacity  = var.boundary_asg_desired_capacity
-  health_check_type = "EC2"
+  name = format("%s-%s", var.boundary_workers_egress_name, count.index)
 
-  vpc_zone_identifier = [local.egress_worker_subnet_id]
+  ami                         = local.ami
+  associate_public_ip_address = false
+  instance_type               = var.boundary_workers_instance_type
+  key_name                    = aws_key_pair.ansible.key_name
+  vpc_security_group_ids      = [local.egress_worker_sg_id]
+  subnet_id                   = local.egress_worker_subnet_id
 
-  # Launch template
-  launch_template_use_name_prefix = true
-  launch_template_name            = var.boundary_asg_name
-  launch_template_description     = "Launch template for Boundary Egress Workers"
-  update_default_version          = true
-
-  image_id      = local.ami
-  instance_type = var.boundary_workers_instance_type
-  ebs_optimized = false
-  user_data     = base64encode(local.user_data)
-  key_name      = aws_key_pair.ansible.key_name
+  user_data_base64 = base64encode(templatefile("${path.module}/templates/userdata.tftpl", {
+    boundary_hcp_cluster_id               = local.boundary_hcp_cluster_id,
+    public_key_openssh                    = local.public_key_openssh,
+    controller_generated_activation_token = boundary_worker.egress_worker[count.index].controller_generated_activation_token
+  }))
+  user_data_replace_on_change = true
 
   metadata_options = {
-    http_tokens = "required"
+    "http_tokens" : "required"
   }
 
-  network_interfaces = [
-    {
-      delete_on_termination = true
-      description           = "eth0"
-      device_index          = 0
-      security_groups       = [local.egress_worker_sg_id]
-    }
-  ]
-
-  tag_specifications = [
-    {
-      resource_type = "instance"
-      tags = {
-        ProjectID     = var.hcp_project_id
-        Environment   = var.environment
-        InstanceGroup = "Boundary_Egress_Workers"
-      }
-    }
-  ]
-
   tags = {
-    ProjectID   = var.hcp_project_id
-    Environment = var.environment
+    ProjectID     = var.hcp_project_id
+    Environment   = var.environment
+    InstanceGroup = "Boundary_Egress_Workers"
   }
 }
