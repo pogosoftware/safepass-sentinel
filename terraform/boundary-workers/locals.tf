@@ -31,7 +31,7 @@ locals {
     TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
     PRIVATE_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/local-ipv4)
 
-# Create egress-worker.hcl file
+    # Create egress-worker.hcl file
     cat <<CONTENT > /etc/boundary.d/egress-worker.hcl
     hcp_boundary_cluster_id = "${local.boundary_hcp_cluster_id}"
 
@@ -52,7 +52,7 @@ locals {
     chown boundary:boundary /etc/boundary.d/egress-worker.hcl
     chmod -R 750 /etc/boundary.d/egress-worker.hcl
 
-# Create boundary.service file
+    # Create boundary.service file
     cat <<CONTENT > /etc/systemd/system/boundary.service
     [Unit]
     Description=Hashicorp Boundary Egress Worker
@@ -69,11 +69,11 @@ locals {
     WantedBy=multi-user.target
     CONTENT
 
-# Start the Boundary service
+    # Start the Boundary service
     systemctl enable boundary
     systemctl start boundary
     
-# Configure Vault ca-key.pub ssh key
+    # Configure Vault ca-key.pub ssh key
     cat <<CONTENT > /etc/ssh/ca-key.pub
     ${local.public_key_openssh}
     CONTENT
