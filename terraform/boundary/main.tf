@@ -37,3 +37,34 @@ resource "boundary_credential_library_vault_ssh_certificate" "certificates_libra
     permit-pty = ""
   }
 }
+
+### Admin user
+resource "boundary_auth_method" "password" {
+  scope_id = boundary_scope.org.id
+  type     = "password"
+}
+
+resource "boundary_user" "admin" {
+  name     = "Admin"
+  scope_id = boundary_scope.org.id
+}
+
+resource "boundary_account_password" "admin" {
+  auth_method_id = boundary_auth_method.password.id
+  name           = "Pogosoftware Admin"
+  login_name     = "admin"
+  password       = "$uper$ecure"
+}
+
+resource "boundary_group" "admin" {
+  name       = "Pogosoftware Admins"
+  member_ids = [boundary_user.admin.id]
+  scope_id   = boundary_scope.org.id
+}
+
+resource "boundary_role" "admin" {
+  name          = "Project admins"
+  principal_ids = [boundary_group.admin.id]
+  grant_strings = ["id=*;type=*;actions=*"]
+  scope_id      = boundary_scope.project.id
+}
