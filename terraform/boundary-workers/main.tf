@@ -12,12 +12,6 @@ resource "aws_key_pair" "ansible" {
   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDjkJm/8rzkU0MwHUQkIUrxOJwuSDY1KwjutsOAD1kGP"
 }
 
-resource "aws_iam_policy" "ec2_get_ssm_param" {
-  name   = "ec2_get_ssm_param"
-  path   = "/"
-  policy = data.aws_iam_policy_document.ssm.json
-}
-
 resource "aws_security_group_rule" "egress_allow_all" {
   type              = "egress"
   to_port           = 0
@@ -36,29 +30,50 @@ resource "aws_security_group_rule" "ingress_allow_ssh" {
   security_group_id = local.egress_worker_sg_id
 }
 
-module "boundary_egress_worker" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "5.6.0"
+module "boundary_egress_workers" {
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "7.3.1"
 
-  name = var.boundary_workers_egress_name
+  use_name_prefix = true
+  name            = var.boundary_asg_name
 
-  ami                         = local.ami
-  associate_public_ip_address = false
-  instance_type               = var.boundary_workers_instance_type
-  key_name                    = aws_key_pair.ansible.key_name
-  vpc_security_group_ids      = [local.egress_worker_sg_id]
-  subnet_id                   = local.egress_worker_subnet_id
+  min_size          = var.boundary_asg_min_size
+  max_size          = var.boundary_asg_max_size
+  desired_capacity  = var.boundary_asg_desired_capacity
+  health_check_type = "EC2"
 
-  user_data_base64            = base64encode(local.user_data)
-  user_data_replace_on_change = true
+  vpc_zone_identifier = [local.egress_worker_subnet_id]
+  security_groups     = [local.egress_worker_sg_id]
 
-  create_iam_instance_profile = true
-  iam_role_description        = "IAM role for EC2 Boundary Egress Worker instance"
-  iam_role_policies = {
-    SSMParameter = aws_iam_policy.ec2_get_ssm_param.arn
-  }
+  # Launch template
+  launch_template_use_name_prefix = true
+  launch_template_name            = var.boundary_asg_name
+  launch_template_description     = "Launch template for Boundary Egress Workers"
+  update_default_version          = true
+
+  image_id      = local.ami
+  instance_type = var.boundary_workers_instance_type
+  ebs_optimized = true
+  user_data     = base64encode(local.user_data)
+  key_name      = aws_key_pair.ansible.key_name
 
   metadata_options = {
-    "http_tokens": "required"
+    http_tokens = "required"
+  }
+
+  tag_specifications = [
+    {
+      resource_type = "instance"
+      tags = {
+        ProjectID     = var.hcp_project_id
+        Environment   = var.environment
+        InstanceGroup = "Boundary_Egress_Workers"
+      }
+    }
+  ]
+
+  tags = {
+    ProjectID   = var.hcp_project_id
+    Environment = var.environment
   }
 }
