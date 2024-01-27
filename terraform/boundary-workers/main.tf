@@ -1,3 +1,12 @@
+####################################################################################################
+### BOUNDARY
+####################################################################################################
+resource "boundary_worker" "egress_worker" {
+  scope_id                    = "global"
+  name                        = "bounday-egress-worker"
+  worker_generated_auth_token = ""
+}
+
 resource "aws_key_pair" "ansible" {
   key_name   = "ansible"
   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDjkJm/8rzkU0MwHUQkIUrxOJwuSDY1KwjutsOAD1kGP"
@@ -47,5 +56,9 @@ module "boundary_egress_worker" {
   iam_role_description        = "IAM role for EC2 Boundary Egress Worker instance"
   iam_role_policies = {
     SSMParameter = aws_iam_policy.ec2_get_ssm_param.arn
+  }
+
+  metadata_options = {
+    "http_tokens": "required"
   }
 }
