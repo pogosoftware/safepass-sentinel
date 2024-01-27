@@ -29,7 +29,7 @@ locals {
     chmod -R 750 /var/lib/boundary
 
     TOKEN=$(curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
-    PRIVATE_IP=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/local-ipv4)
+    HOSTNAME=$(curl -H "X-aws-ec2-metadata-token: $TOKEN" -v http://169.254.169.254/latest/meta-data/hostname)
 
     # Create egress-worker.hcl file
     cat <<CONTENT > /etc/boundary.d/egress-worker.hcl
@@ -41,7 +41,7 @@ locals {
     }
             
     worker {
-      public_addr = "$PRIVATE_IP"
+      public_addr = "$HOSTNAME"
       controller_generated_activation_token = "${local.controller_generated_activation_token}"
       auth_storage_path = "/var/lib/boundary"
       tags {
