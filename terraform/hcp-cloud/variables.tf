@@ -6,18 +6,9 @@ variable "hcp_project_id" {
   type        = string
 }
 
-# ####################################################################################################
-# ### AWS SSM
-# ####################################################################################################
-variable "ssm_hcp_client_id_name" {
-  default     = "hcp_client_id"
-  description = "The name of SSM HCP client ID param"
-  type        = string
-}
-
-variable "ssm_hcp_client_secret_name" {
-  default     = "hcp_client_secret"
-  description = "The name of SSM HCP client secret param"
+variable "hcp_network_workspace_name" {
+  default     = "network-euc1-dev"
+  description = "The name of network TFC workspace"
   type        = string
 }
 
@@ -69,12 +60,6 @@ variable "hcp_cloud_vault_tier" {
 ####################################################################################################
 ### HCP BOUNDARY CLUSTER
 ####################################################################################################
-variable "boundary_username" {
-  default     = "boundary-admin"
-  description = "The name of Bonundary admin user"
-  type        = string
-}
-
 variable "hcp_cloud_boundary_cluster_id" {
   default     = "safepass-sentinel"
   description = "The ID of the Boundary cluster"
@@ -84,5 +69,26 @@ variable "hcp_cloud_boundary_cluster_id" {
 variable "hcp_cloud_boundary_tier" {
   default     = "Standard"
   description = "The tier that the HCP Boundary cluster will be provisioned as, 'Standard' or 'Plus'"
+  type        = string
+}
+
+####################################################################################################
+### HCP -> AWS PEERING
+####################################################################################################
+variable "aws_region" {
+  default     = "eu-central-1"
+  description = "The Name of AWS region"
+  type        = string
+}
+
+variable "peering_id" {
+  default     = "safepass-sentinel-peering"
+  description = "The ID of the network peering"
+  type        = string
+}
+
+variable "route_id" {
+  default     = "safepass-sentinel-hvn"
+  description = "The ID of the HVN route"
   type        = string
 }
