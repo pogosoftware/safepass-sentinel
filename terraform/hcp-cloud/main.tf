@@ -1,34 +1,4 @@
 # ####################################################################################################
-# ### HCP SERVICE PRINCIPAL
-# ####################################################################################################
-resource "hcp_service_principal" "viewer" {
-  name = "aws-viewer"
-}
-
-resource "hcp_service_principal_key" "viewer" {
-  service_principal = hcp_service_principal.viewer.resource_name
-}
-
-resource "hcp_project_iam_policy" "project_policy" {
-  policy_data = data.hcp_iam_policy.viewer.policy_data
-}
-
-# ####################################################################################################
-# ### AWS SSM
-# ####################################################################################################
-resource "aws_ssm_parameter" "hcp_client_id" {
-  name  = var.ssm_hcp_client_id_name
-  type  = "String"
-  value = hcp_service_principal_key.viewer.client_id
-}
-
-resource "aws_ssm_parameter" "hcp_client_secret" {
-  name  = var.ssm_hcp_client_secret_name
-  type  = "SecureString"
-  value = hcp_service_principal_key.viewer.client_secret
-}
-
-# ####################################################################################################
 # ### HCP VAULT CLUSTER
 # ####################################################################################################
 resource "hcp_hvn" "this" {
@@ -52,29 +22,6 @@ resource "hcp_vault_cluster_admin_token" "this" {
 ####################################################################################################
 ### HCP BOUNDARY CLUSTER
 ####################################################################################################
-resource "hcp_boundary_cluster" "this" {
-  cluster_id = var.hcp_cloud_boundary_cluster_id
-  username   = local.boundary_username
-  password   = local.boundary_password
-  tier       = var.hcp_cloud_boundary_tier
-}
-
-####################################################################################################
-### HCP VAULT SECRETS
-####################################################################################################
-resource "hcp_vault_secrets_app" "hcp_cloud" {
-  app_name    = "hcp-cloud"
-  description = "This app contains credentials to HCP Cloud"
-}
-
-## HCP Vault
-resource "hcp_vault_secrets_secret" "vault_cluster_admin_token" {
-  app_name     = hcp_vault_secrets_app.hcp_cloud.app_name
-  secret_name  = "vault_cluster_admin_token"
-  secret_value = hcp_vault_cluster_admin_token.this.token
-}
-
-## HCP Boundary
 resource "random_string" "boundary_username" {
   length  = 16
   special = false
@@ -87,14 +34,98 @@ resource "random_password" "boundary_password" {
   override_special = "/@£$"
 }
 
-resource "hcp_vault_secrets_secret" "boundary_username" {
-  app_name     = hcp_vault_secrets_app.hcp_cloud.app_name
-  secret_name  = "boundary_username"
-  secret_value = local.boundary_username
+resource "hcp_boundary_cluster" "this" {
+  cluster_id = var.hcp_cloud_boundary_cluster_id
+  username   = local.boundary_username
+  password   = local.boundary_password
+  tier       = var.hcp_cloud_boundary_tier
 }
 
-resource "hcp_vault_secrets_secret" "boundary_password" {
-  app_name     = hcp_vault_secrets_app.hcp_cloud.app_name
-  secret_name  = "boundary_password"
-  secret_value = local.boundary_password
+####################################################################################################
+### HCP -> AWS PEERING
+####################################################################################################
+resource "hcp_aws_network_peering" "peer" {
+  hvn_id          = hcp_hvn.this.hvn_id
+  peering_id      = var.peering_id
+  peer_vpc_id     = local.peer_vpc_id
+  peer_account_id = local.peer_account_id
+  peer_vpc_region = local.peer_vpc_region
+}
+
+resource "hcp_hvn_route" "peer_route" {
+  hvn_link         = hcp_hvn.this.self_link
+  hvn_route_id     = var.route_id
+  destination_cidr = local.peer_destination_cidr
+  target_link      = hcp_aws_network_peering.peer.self_link
+}
+
+resource "aws_vpc_peering_connection_accepter" "peer" {
+  vpc_peering_connection_id = hcp_aws_network_peering.peer.provider_peering_id
+  auto_accept               = true
+}
+
+####################################################################################################
+### VAULT
+####################################################################################################
+resource "vault_namespace" "develop" {
+  path = "develop"
+}
+
+resource "vault_mount" "apps" {
+  namespace = vault_namespace.develop.path
+  path      = "apps"
+  type      = "kv-v2"
+}
+
+resource "vault_kv_secret_v2" "boundary" {
+  namespace           = vault_namespace.develop.path
+  mount               = vault_mount.apps.path
+  name                = "infra/boundary"
+  cas                 = 1
+  delete_all_versions = true
+  data_json = jsonencode(
+    {
+      username = local.boundary_username,
+      password = local.boundary_password
+    }
+  )
+  custom_metadata {
+    max_versions = 5
+    data = {
+      tf_module = "hcp-cloud"
+    }
+  }
+}
+
+####################################################################################################
+### VAULT - JWT AUTH ROLE FOR TFC
+####################################################################################################
+resource "vault_jwt_auth_backend" "jwt" {
+  namespace          = vault_namespace.develop.path
+  description        = "Dynamic Credentials with the Vault Provider"
+  path               = "jwt"
+  oidc_discovery_url = "https://app.terraform.io"
+  bound_issuer       = "https://app.terraform.io"
+}
+
+resource "vault_policy" "tfc_policy" {
+  name      = "tfc"
+  namespace = vault_namespace.develop.path
+  policy    = file("templates/tfc-policy.hcl")
+}
+
+resource "vault_jwt_auth_backend_role" "tfc" {
+  namespace      = vault_namespace.develop.path
+  backend        = vault_jwt_auth_backend.jwt.path
+  role_name      = "tfc-role"
+  token_policies = ["tfc"]
+
+  bound_audiences   = ["vault.workload.identity"]
+  bound_claims_type = "glob"
+  bound_claims = {
+    sub = "organization:${data.hcp_organization.this.name}:project:${data.hcp_project.this.name}:workspace:*:run_phase:*"
+  }
+  user_claim = "terraform_full_workspace"
+  role_type  = "jwt"
+  token_ttl  = 1200
 }
