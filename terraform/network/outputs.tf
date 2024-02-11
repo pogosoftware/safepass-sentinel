@@ -3,6 +3,11 @@ output "vpc_id" {
   value       = module.vpc.vpc_id
 }
 
+output "vpc_owner_id" {
+  description = "The ID of the AWS account that owns the VPC"
+  value       = module.vpc.vpc_owner_id
+}
+
 output "vpc_cidr_block" {
   description = "The CIDR of VPC"
   value       = module.vpc.vpc_cidr_block

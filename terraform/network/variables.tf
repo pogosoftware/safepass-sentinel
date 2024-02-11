@@ -1,3 +1,9 @@
+variable "aws_region" {
+  default     = "eu-central-1"
+  description = "The Name of AWS region"
+  type        = string
+}
+
 variable "network_vpc_name" {
   default     = "boundary"
   description = "The name of vpc"
@@ -83,6 +89,9 @@ variable "network_security_groups" {
     },
     "client-vpn-endpoint" = {
       description = "This is SG for AWS VPN Client"
+    },
+    "database" = {
+      description = "This is SG for a RDS Postgress database"
     }
   }
   description = "The names of the security groups"
