@@ -27,4 +27,8 @@ resource "aws_security_group" "this" {
   name        = each.key
   description = each.value.description
   vpc_id      = module.vpc.vpc_id
+
+  tags = {
+    Name = each.key
+  }
 }
