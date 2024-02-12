@@ -5,7 +5,7 @@ variable "aws_region" {
 }
 
 variable "network_vpc_name" {
-  default     = "boundary"
+  default     = "safepass-sentinel"
   description = "The name of vpc"
   type        = string
 }
@@ -89,9 +89,6 @@ variable "network_security_groups" {
     },
     "client-vpn-endpoint" = {
       description = "This is SG for AWS VPN Client"
-    },
-    "database" = {
-      description = "This is SG for a RDS Postgress database"
     }
   }
   description = "The names of the security groups"
