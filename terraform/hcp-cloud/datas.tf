@@ -1,5 +1,10 @@
 data "hcp_organization" "this" {}
 
+data "tfe_workspace_ids" "workspaces" {
+  names        = var.hcp_vault_variable_set_workspaces
+  organization = data.hcp_organization.this.name
+}
+
 data "hcp_project" "this" {
   project = var.hcp_project_id
 }

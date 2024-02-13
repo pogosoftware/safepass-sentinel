@@ -12,6 +12,12 @@ variable "hcp_network_workspace_name" {
   type        = string
 }
 
+variable "hcp_vault_variable_set_workspaces" {
+  default     = ["vault-euc1"]
+  description = "The namas of workspace that will be using HCP Vault"
+  type        = set(string)
+}
+
 ####################################################################################################
 ### HCP VAULT CLUSTER
 ####################################################################################################

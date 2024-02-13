@@ -105,23 +105,27 @@ resource "vault_kv_secret_v2" "boundary" {
 ####################################################################################################
 resource "vault_jwt_auth_backend" "jwt" {
   namespace          = vault_namespace.develop.path
-  description        = "Dynamic Credentials with the Vault Provider"
+  description        = "Dynamic Credentials for Vault provider"
   path               = "jwt"
   oidc_discovery_url = "https://app.terraform.io"
   bound_issuer       = "https://app.terraform.io"
 }
 
 resource "vault_policy" "tfc_policy" {
-  name      = "tfc"
+  for_each = var.hcp_vault_variable_set_workspaces
+
+  name      = each.key
   namespace = vault_namespace.develop.path
-  policy    = file("templates/tfc-policy.hcl")
+  policy    = file("templates/${each.key}-policy.hcl")
 }
 
 resource "vault_jwt_auth_backend_role" "tfc" {
+  for_each = var.hcp_vault_variable_set_workspaces
+
   namespace      = vault_namespace.develop.path
   backend        = vault_jwt_auth_backend.jwt.path
-  role_name      = "tfc-role"
-  token_policies = ["tfc"]
+  role_name      = each.key
+  token_policies = [each.key]
 
   bound_audiences   = ["vault.workload.identity"]
   bound_claims_type = "glob"
@@ -131,4 +135,45 @@ resource "vault_jwt_auth_backend_role" "tfc" {
   user_claim = "terraform_full_workspace"
   role_type  = "jwt"
   token_ttl  = 1200
+}
+
+####################################################################################################
+### CREATE VARABLE SETS WITH VAULT CREDENTIALS
+####################################################################################################
+resource "tfe_variable_set" "vault" {
+  for_each = var.hcp_vault_variable_set_workspaces
+
+  name         = "SafaPass Sentinel - Develop - Vault (${each.key}) Credentials"
+  description  = "This resource is manage by Terraform"
+  organization = data.hcp_organization.this.name
+  workspace_ids = [
+    data.tfe_workspace_ids.workspaces.ids[each.key]
+  ]
+}
+
+resource "tfe_variable" "tfc_vault_provider_auth" {
+  for_each = var.hcp_vault_variable_set_workspaces
+
+  key             = "TFC_VAULT_PROVIDER_AUTH"
+  value           = "true"
+  category        = "env"
+  variable_set_id = tfe_variable_set.vault[each.key].id
+}
+
+resource "tfe_variable" "tfc_vault_addr" {
+  for_each = var.hcp_vault_variable_set_workspaces
+
+  key             = "VAULT_ADDR"
+  value           = hcp_vault_cluster.this.vault_public_endpoint_url
+  category        = "env"
+  variable_set_id = tfe_variable_set.vault[each.key].id
+}
+
+resource "tfe_variable" "tfc_vault_run_role" {
+  for_each = var.hcp_vault_variable_set_workspaces
+
+  key             = "TFC_VAULT_RUN_ROLE"
+  value           = each.key
+  category        = "env"
+  variable_set_id = tfe_variable_set.vault[each.key].id
 }
