@@ -1,4 +1,13 @@
 ####################################################################################################
+### GLOBAL
+####################################################################################################
+variable "environment" {
+  default     = "dev"
+  description = "The Name of environment. Possible values are: `dev`, `stg`, `prd`"
+  type        = string
+}
+
+####################################################################################################
 ### HCP
 ####################################################################################################
 variable "hcp_project_id" {
@@ -7,6 +16,7 @@ variable "hcp_project_id" {
 }
 
 variable "hcp_cloud_workspace_name" {
+  default     = "hcp-cloud-euc1"
   description = "The name of hcp cloud workspace"
   type        = string
 }
@@ -14,11 +24,6 @@ variable "hcp_cloud_workspace_name" {
 ####################################################################################################
 ### VAULT
 ####################################################################################################
-variable "vault_namespace" {
-  description = "The name of vault namespace"
-  type        = string
-}
-
 variable "vault_ssh_mount_path" {
   default     = "ssh-client-signer"
   description = "The path to SSH Vault mount"
