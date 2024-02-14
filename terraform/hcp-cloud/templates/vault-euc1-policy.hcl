@@ -41,3 +41,7 @@ path "auth/token/create" {
 path "auth/token/lookup-accessor" {
   capabilities = ["create", "update"]
 }
+
+path "auth/token/revoke-accessor" {
+  capabilities = ["create", "update"]
+}
