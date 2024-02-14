@@ -7,5 +7,6 @@ locals {
   boundary_password = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_password
 
   # vault
+  vault_public_endpoint_url      = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_public_endpoint_url
   vault_devops_namespace_path_fq = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_devops_namespace_path_fq
 }
