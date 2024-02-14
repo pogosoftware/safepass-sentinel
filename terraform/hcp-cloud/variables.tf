@@ -1,4 +1,13 @@
 ####################################################################################################
+### GLOBAL
+####################################################################################################
+variable "environment" {
+  default     = "dev"
+  description = "The Name of environment. Possible values are: `dev`, `stg`, `prd`"
+  type        = string
+}
+
+####################################################################################################
 ### HCP CLOUD
 ####################################################################################################
 variable "hcp_project_id" {
@@ -7,13 +16,13 @@ variable "hcp_project_id" {
 }
 
 variable "hcp_network_workspace_name" {
-  default     = "network-euc1-dev"
+  default     = "network-euc1"
   description = "The name of network TFC workspace"
   type        = string
 }
 
 variable "hcp_vault_variable_set_workspaces" {
-  default     = ["vault-euc1"]
+  default     = ["vault-euc1", "boundary-euc1"]
   description = "The namas of workspace that will be using HCP Vault"
   type        = set(string)
 }
@@ -88,13 +97,13 @@ variable "aws_region" {
 }
 
 variable "peering_id" {
-  default     = "safepass-sentinel-peering"
+  default     = "safepass-sentinel"
   description = "The ID of the network peering"
   type        = string
 }
 
 variable "route_id" {
-  default     = "safepass-sentinel-hvn"
+  default     = "safepass-sentinel"
   description = "The ID of the HVN route"
   type        = string
 }

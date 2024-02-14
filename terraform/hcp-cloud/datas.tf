@@ -1,7 +1,7 @@
 data "hcp_organization" "this" {}
 
 data "tfe_workspace_ids" "workspaces" {
-  names        = var.hcp_vault_variable_set_workspaces
+  names        = values(local.hcp_vault_variable_set_workspaces)
   organization = data.hcp_organization.this.name
 }
 
@@ -15,7 +15,7 @@ data "terraform_remote_state" "network" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = var.hcp_network_workspace_name
+      name = local.hcp_network_workspace_name
     }
   }
 }

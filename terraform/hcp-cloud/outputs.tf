@@ -11,6 +11,17 @@ output "hcp_boundary_cluster_url" {
   value       = hcp_boundary_cluster.this.cluster_url
 }
 
+output "hcp_boundary_username" {
+  description = "The name of HCP Boudary"
+  value       = local.boundary_username
+}
+
+output "hcp_boundary_password" {
+  description = "The name of HCP Boudary"
+  value       = local.boundary_password
+  sensitive   = true
+}
+
 ####################################################################################################
 ### HCP VAULT
 ####################################################################################################
@@ -24,7 +35,22 @@ output "hcp_vault_private_endpoint_url" {
   value       = hcp_vault_cluster.this.vault_private_endpoint_url
 }
 
-output "hcp_vault_cluster_admin_token" {
-  value     = hcp_vault_cluster_admin_token.this.token
-  sensitive = true
+output "hcp_vault_env_namespace_path" {
+  description = "The path to the environment namespace"
+  value       = vault_namespace.env.path
+}
+
+output "hcp_vault_env_namespace_path_fq" {
+  description = "The fully qualified path to the environment namespace"
+  value       = vault_namespace.env.path_fq
+}
+
+output "hcp_vault_devops_namespace_path" {
+  description = "The path to the devops namespace"
+  value       = vault_namespace.devops.path
+}
+
+output "hcp_vault_devops_namespace_path_fq" {
+  description = "The fully qualified path to the devops namespace"
+  value       = vault_namespace.devops.path_fq
 }
