@@ -145,6 +145,24 @@ resource "tfe_variable" "tfc_vault_addr" {
   variable_set_id = tfe_variable_set.vault[each.key].id
 }
 
+resource "tfe_variable" "tfc_vault_namespace" {
+  for_each = local.hcp_vault_variable_set_workspaces
+
+  key             = "TFC_VAULT_NAMESPACE"
+  value           = format("admin/%s", vault_namespace.devops.path_fq)
+  category        = "env"
+  variable_set_id = tfe_variable_set.vault[each.key].id
+}
+
+resource "tfe_variable" "tfc_vault_run_role" {
+  for_each = local.hcp_vault_variable_set_workspaces
+
+  key             = "TFC_VAULT_RUN_ROLE"
+  value           = each.key
+  category        = "env"
+  variable_set_id = tfe_variable_set.vault[each.key].id
+}
+
 resource "tfe_variable" "vault_addr" {
   for_each = local.hcp_vault_variable_set_workspaces
 
@@ -163,11 +181,3 @@ resource "tfe_variable" "vault_namespace" {
   variable_set_id = tfe_variable_set.vault[each.key].id
 }
 
-resource "tfe_variable" "tfc_vault_run_role" {
-  for_each = local.hcp_vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_RUN_ROLE"
-  value           = each.key
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
