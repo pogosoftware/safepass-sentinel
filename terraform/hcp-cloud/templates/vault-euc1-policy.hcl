@@ -10,6 +10,10 @@ path "sys/mounts/apps" {
   capabilities = ["create", "update", "read", "delete"]
 }
 
+path "apps/+/infra/boundary" {
+  capabilities = ["create", "update", "read", "delete"]
+}
+
 path "sys/mounts/ssh-client-signer" {
   capabilities = ["create", "update", "delete"]
 }
@@ -31,5 +35,9 @@ path "ssh-client-signer/roles/boundary-client" {
 }
 
 path "auth/token/create" {
+  capabilities = ["create", "update", "sudo"]
+}
+
+path "auth/token/lookup-accessor" {
   capabilities = ["create", "update"]
 }
