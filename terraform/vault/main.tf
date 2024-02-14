@@ -1,22 +1,21 @@
 ####################################################################################################
-### VAULT SSH RESOURCES
+### SSH KEYS
 ####################################################################################################
 resource "tls_private_key" "vault" {
   algorithm = "ED25519"
 }
 
-resource "vault_namespace" "this" {
-  path = var.vault_namespace
-}
-
+####################################################################################################
+### VAULT SSH RESOURCES
+####################################################################################################
 resource "vault_mount" "ssh" {
-  namespace = vault_namespace.this.path
+  namespace = local.vault_devops_namespace_path_fq
   path      = var.vault_ssh_mount_path
   type      = "ssh"
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh" {
-  namespace            = vault_namespace.this.path
+  namespace            = local.vault_devops_namespace_path_fq
   backend              = vault_mount.ssh.path
   generate_signing_key = false
   public_key           = tls_private_key.vault.public_key_openssh
@@ -24,48 +23,24 @@ resource "vault_ssh_secret_backend_ca" "ssh" {
 }
 
 resource "vault_policy" "boundary_controller" {
-  namespace = vault_namespace.this.path
+  namespace = local.vault_devops_namespace_path_fq
   name      = "boundary-controller"
 
-  policy = <<EOT
-path "auth/token/lookup-self" {
-  capabilities = ["read"]
-}
-path "auth/token/renew-self" {
-  capabilities = ["update"]
-}
-path "auth/token/revoke-self" {
-  capabilities = ["update"]
-}
-path "sys/leases/renew" {
-  capabilities = ["update"]
-}
-path "sys/leases/revoke" {
-  capabilities = ["update"]
-}
-path "sys/capabilities-self" {
-  capabilities = ["update"]
-}
-EOT
+  policy = file("templates/boundary-controller-policy.hcl")
 }
 
 resource "vault_policy" "ssh" {
-  namespace = vault_namespace.this.path
+  namespace = local.vault_devops_namespace_path_fq
   name      = "ssh"
 
-  policy = <<EOT
-path "${var.vault_ssh_mount_path}/issue/${var.vault_ssh_role_name}" {
-  capabilities = ["create", "update"]
-}
-
-path "${var.vault_ssh_mount_path}/sign/${var.vault_ssh_role_name}" {
-  capabilities = ["create", "update"]
-}
-EOT
+  policy = templatefile("templates/ssh-policy.hcl", {
+    vault_ssh_mount_path = var.vault_ssh_mount_path,
+    vault_ssh_role_name  = var.vault_ssh_role_name
+  })
 }
 
 resource "vault_ssh_secret_backend_role" "boundary_client" {
-  namespace               = vault_namespace.this.path
+  namespace               = local.vault_devops_namespace_path_fq
   name                    = var.vault_ssh_role_name
   backend                 = vault_mount.ssh.path
   key_type                = "ca"
@@ -79,7 +54,7 @@ resource "vault_ssh_secret_backend_role" "boundary_client" {
 }
 
 resource "vault_token" "boundary" {
-  namespace         = vault_namespace.this.path
+  namespace         = local.vault_devops_namespace_path_fq
   no_default_policy = true
   policies          = ["boundary-controller", "ssh"]
   no_parent         = true
@@ -88,27 +63,32 @@ resource "vault_token" "boundary" {
 }
 
 ####################################################################################################
-### HCP VAULT SECRETS
+### VAULT APPS
 ####################################################################################################
-resource "hcp_vault_secrets_app" "vault" {
-  app_name    = "vault"
-  description = "This app contains credentials to VAULT"
+resource "vault_mount" "apps" {
+  namespace = local.vault_devops_namespace_path_fq
+  path      = "apps"
+  type      = "kv-v2"
 }
 
-resource "hcp_vault_secrets_secret" "vault_public_key_openssh" {
-  app_name     = hcp_vault_secrets_app.vault.app_name
-  secret_name  = "public_key_openssh"
-  secret_value = tls_private_key.vault.public_key_openssh
-}
+resource "vault_kv_secret_v2" "boundary" {
+  namespace           = local.vault_devops_namespace_path_fq
+  mount               = vault_mount.apps.path
+  name                = "infra/boundary"
+  cas                 = 1
+  delete_all_versions = true
+  data_json = jsonencode(
+    {
+      username    = local.boundary_username,
+      password    = local.boundary_password,
+      vault_token = vault_token.boundary.client_token
+    }
+  )
 
-resource "hcp_vault_secrets_secret" "vault_private_key_openssh" {
-  app_name     = hcp_vault_secrets_app.vault.app_name
-  secret_name  = "private_key_openssh"
-  secret_value = tls_private_key.vault.private_key_openssh
-}
-
-resource "hcp_vault_secrets_secret" "vault_boundary_client_token" {
-  app_name     = hcp_vault_secrets_app.vault.app_name
-  secret_name  = "vault_boundary_client_token"
-  secret_value = vault_token.boundary.client_token
+  custom_metadata {
+    max_versions = 5
+    data = {
+      tf_module = "hcp-cloud"
+    }
+  }
 }
