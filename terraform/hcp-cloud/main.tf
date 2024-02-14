@@ -162,22 +162,3 @@ resource "tfe_variable" "tfc_vault_run_role" {
   category        = "env"
   variable_set_id = tfe_variable_set.vault[each.key].id
 }
-
-resource "tfe_variable" "vault_addr" {
-  for_each = local.hcp_vault_variable_set_workspaces
-
-  key             = "VAULT_ADDR"
-  value           = hcp_vault_cluster.this.vault_public_endpoint_url
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "vault_namespace" {
-  for_each = local.hcp_vault_variable_set_workspaces
-
-  key             = "VAULT_NAMESPACE"
-  value           = vault_namespace.devops.path_fq
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-

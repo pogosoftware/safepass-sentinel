@@ -9,13 +9,11 @@ resource "tls_private_key" "vault" {
 ### VAULT SSH RESOURCES
 ####################################################################################################
 resource "vault_mount" "ssh" {
-  namespace = local.vault_devops_namespace_path_fq
   path      = var.vault_ssh_mount_path
   type      = "ssh"
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh" {
-  namespace            = local.vault_devops_namespace_path_fq
   backend              = vault_mount.ssh.path
   generate_signing_key = false
   public_key           = tls_private_key.vault.public_key_openssh
@@ -23,14 +21,12 @@ resource "vault_ssh_secret_backend_ca" "ssh" {
 }
 
 resource "vault_policy" "boundary_controller" {
-  namespace = local.vault_devops_namespace_path_fq
   name      = "boundary-controller"
 
   policy = file("templates/boundary-controller-policy.hcl")
 }
 
 resource "vault_policy" "ssh" {
-  namespace = local.vault_devops_namespace_path_fq
   name      = "ssh"
 
   policy = templatefile("templates/ssh-policy.hcl", {
@@ -40,7 +36,6 @@ resource "vault_policy" "ssh" {
 }
 
 resource "vault_ssh_secret_backend_role" "boundary_client" {
-  namespace               = local.vault_devops_namespace_path_fq
   name                    = var.vault_ssh_role_name
   backend                 = vault_mount.ssh.path
   key_type                = "ca"
@@ -54,7 +49,6 @@ resource "vault_ssh_secret_backend_role" "boundary_client" {
 }
 
 resource "vault_token" "boundary" {
-  namespace         = local.vault_devops_namespace_path_fq
   no_default_policy = true
   policies          = ["boundary-controller", "ssh"]
   no_parent         = true
@@ -66,13 +60,11 @@ resource "vault_token" "boundary" {
 ### VAULT APPS
 ####################################################################################################
 resource "vault_mount" "apps" {
-  namespace = local.vault_devops_namespace_path_fq
   path      = "apps"
   type      = "kv-v2"
 }
 
 resource "vault_kv_secret_v2" "boundary" {
-  namespace           = local.vault_devops_namespace_path_fq
   mount               = vault_mount.apps.path
   name                = "infra/boundary"
   cas                 = 1
