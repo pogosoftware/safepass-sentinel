@@ -6,6 +6,10 @@ path "sys/mounts" {
   capabilities = ["read"]
 }
 
+path "sys/mounts/apps" {
+  capabilities = ["create", "update", "read", "delete"]
+}
+
 path "sys/mounts/ssh-client-signer" {
   capabilities = ["create", "update", "delete"]
 }
