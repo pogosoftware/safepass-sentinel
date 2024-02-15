@@ -1,4 +1,13 @@
 ####################################################################################################
+### GLOBAL
+####################################################################################################
+variable "environment" {
+  default     = "dev"
+  description = "The Name of environment. Possible values are: `dev`, `stg`, `prd`"
+  type        = string
+}
+
+####################################################################################################
 ### HCP
 ####################################################################################################
 variable "hcp_project_id" {
@@ -7,11 +16,13 @@ variable "hcp_project_id" {
 }
 
 variable "hcp_cloud_workspace_name" {
+  default     = "hcp-cloud-euc1"
   description = "The name of hcp-cloud TFC workspace"
   type        = string
 }
 
 variable "hcp_vault_workspace_name" {
+  default     = "vault-euc1"
   description = "The name of vault TFC workspace"
   type        = string
 }
@@ -46,5 +57,14 @@ variable "hcp_boundary_project_description" {
 variable "boundary_vault_namespace" {
   default     = "admin"
   description = "The name of Vault namespace"
+  type        = string
+}
+
+####################################################################################################
+### AWS
+####################################################################################################
+variable "aws_region" {
+  default     = "eu-central-1"
+  description = "The Name of AWS region"
   type        = string
 }

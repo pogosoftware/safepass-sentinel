@@ -1,9 +1,17 @@
 locals {
-  boundary_cluster_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
-  boundary_username    = data.hcp_vault_secrets_secret.boundary_username.secret_value
-  boundary_password    = data.hcp_vault_secrets_secret.boundary_password.secret_value
+  # hcp
+  hcp_cloud_workspace_name = format("%s-%s", var.hcp_cloud_workspace_name, var.environment)
+  hcp_vault_workspace_name = format("%s-%s", var.hcp_vault_workspace_name, var.environment)
 
-  vault_public_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_public_endpoint_url
-  vault_client_token        = data.hcp_vault_secrets_secret.vault_boundary_client_token.secret_value
-  vault_namespace           = data.terraform_remote_state.vault.outputs.vault_namespace
+  # boundary
+  boundary_cluster_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
+  boundary_username    = data.vault_kv_secret_v2.boundary.data["username"]
+  boundary_password    = data.vault_kv_secret_v2.boundary.data["password"]
+
+  boundary_vault_mount_name  = data.terraform_remote_state.hcp_vault.outputs.vault_apps_mount_name
+  boundary_vault_secret_name = data.terraform_remote_state.hcp_vault.outputs.vault_apps_boundary_secret_name
+
+  vault_private_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_private_endpoint_url
+  vault_client_token         = data.vault_kv_secret_v2.boundary.data["vault_token"]
+  vault_namespace            = "admin/dev/devops"
 }
