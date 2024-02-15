@@ -68,7 +68,7 @@ resource "boundary_group" "admin" {
 resource "boundary_role" "admin" {
   name          = "Project admins"
   principal_ids = [boundary_group.admin.id]
-  grant_strings = ["id=*;type=*;actions=*"]
+  grant_strings = ["ids=*;type=*;actions=*"]
   scope_id      = boundary_scope.project.id
 }
 
