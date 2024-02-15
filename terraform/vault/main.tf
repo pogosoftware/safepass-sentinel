@@ -9,8 +9,8 @@ resource "tls_private_key" "vault" {
 ### VAULT SSH RESOURCES
 ####################################################################################################
 resource "vault_mount" "ssh" {
-  path      = var.vault_ssh_mount_path
-  type      = "ssh"
+  path = var.vault_ssh_mount_path
+  type = "ssh"
 }
 
 resource "vault_ssh_secret_backend_ca" "ssh" {
@@ -21,13 +21,13 @@ resource "vault_ssh_secret_backend_ca" "ssh" {
 }
 
 resource "vault_policy" "boundary_controller" {
-  name      = "boundary-controller"
+  name = "boundary-controller"
 
   policy = file("templates/boundary-controller-policy.hcl")
 }
 
 resource "vault_policy" "ssh" {
-  name      = "ssh"
+  name = "ssh"
 
   policy = templatefile("templates/ssh-policy.hcl", {
     vault_ssh_mount_path = var.vault_ssh_mount_path,
@@ -60,13 +60,13 @@ resource "vault_token" "boundary" {
 ### VAULT APPS
 ####################################################################################################
 resource "vault_mount" "apps" {
-  path      = "apps"
-  type      = "kv-v2"
+  path = var.vault_apps_mount_name
+  type = "kv-v2"
 }
 
 resource "vault_kv_secret_v2" "boundary" {
   mount               = vault_mount.apps.path
-  name                = "infra/boundary"
+  name                = var.vault_apps_boundary_secret_name
   cas                 = 1
   delete_all_versions = true
   data_json = jsonencode(

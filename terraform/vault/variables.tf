@@ -41,3 +41,15 @@ variable "vault_ssh_default_user" {
   description = "The SSH default user name"
   type        = string
 }
+
+variable "vault_apps_mount_name" {
+  default     = "apps"
+  description = "The name of Vault mount for apps"
+  type        = string
+}
+
+variable "vault_apps_boundary_secret_name" {
+  default     = "infra/boundary"
+  description = "The name of boundary secret in vault"
+  type        = string
+}
