@@ -20,7 +20,7 @@ resource "boundary_scope" "project" {
 
 resource "boundary_credential_store_vault" "certificates_store" {
   name      = "vault-ssh-develop-store"
-  address   = local.vault_public_endpoint_url
+  address   = local.vault_private_endpoint_url
   token     = local.vault_client_token
   scope_id  = boundary_scope.project.id
   namespace = local.vault_namespace
@@ -38,7 +38,9 @@ resource "boundary_credential_library_vault_ssh_certificate" "certificates_libra
   }
 }
 
+####################################################################################################
 ### Admin user
+####################################################################################################
 resource "boundary_auth_method" "password" {
   scope_id = boundary_scope.org.id
   type     = "password"
@@ -68,4 +70,58 @@ resource "boundary_role" "admin" {
   principal_ids = [boundary_group.admin.id]
   grant_strings = ["id=*;type=*;actions=*"]
   scope_id      = boundary_scope.project.id
+}
+
+####################################################################################################
+### AWS DYNAMIC HOSTS
+####################################################################################################
+resource "aws_iam_user" "boundary" {
+  name = "boundary"
+  path = "/"
+}
+
+resource "aws_iam_access_key" "boundary" {
+  user = aws_iam_user.boundary.name
+}
+
+resource "aws_iam_user_policy" "boundary_describe_instances" {
+  name   = "BoundaryDescribeInstances"
+  user   = aws_iam_user.boundary.name
+  policy = data.aws_iam_policy_document.boudary_describe_instances.json
+}
+
+resource "boundary_host_catalog_plugin" "egress_workers" {
+  name            = "boundary egress workers"
+  scope_id        = boundary_scope.project.id
+  plugin_name     = "aws"
+  attributes_json = jsonencode({ "region" = var.aws_region })
+
+  secrets_json = jsonencode({
+    "access_key_id"     = aws_iam_access_key.boundary.id
+    "secret_access_key" = aws_iam_access_key.boundary.secret
+  })
+}
+
+resource "boundary_host_set_plugin" "egress_workers" {
+  name            = "boudary egress workers"
+  host_catalog_id = boundary_host_catalog_plugin.egress_workers.id
+  attributes_json = jsonencode({ "filters" = ["tag:InstanceGroup=EC2_Egress_Workers"] })
+}
+
+resource "boundary_host_catalog_plugin" "postgres" {
+  name            = "postgres databases"
+  scope_id        = boundary_scope.project.id
+  plugin_name     = "aws"
+  attributes_json = jsonencode({ "region" = var.aws_region })
+
+  secrets_json = jsonencode({
+    "access_key_id"     = aws_iam_access_key.boundary.id
+    "secret_access_key" = aws_iam_access_key.boundary.secret
+  })
+}
+
+resource "boundary_host_set_plugin" "postgres" {
+  name            = "postgres databases"
+  host_catalog_id = boundary_host_catalog_plugin.egress_workers.id
+  attributes_json = jsonencode({ "filters" = ["tag:InstanceGroup=RDS_Postgres"] })
 }
