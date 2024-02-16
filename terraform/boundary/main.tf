@@ -81,8 +81,15 @@ resource "boundary_scope" "project" {
   auto_create_default_role = true
 }
 
+/* TODO
+This can be fixed when it will be available TFC agent.
+Add provisioner to wait until cloud-init finished its job
+```
+cloud-init status --wait
+```
+*/
 resource "boundary_credential_store_vault" "ssh" {
-  depends_on = [data.aws_instance.wait_for_ec2_egress_worker]
+  depends_on = [module.ec2_egress_worker]
 
   name          = local.ssh_credential_store
   address       = local.vault_private_endpoint_url
@@ -163,8 +170,9 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
   attributes_json = jsonencode({ "region" = var.aws_region })
 
   secrets_json = jsonencode({
-    "access_key_id"     = aws_iam_access_key.boundary.id
-    "secret_access_key" = aws_iam_access_key.boundary.secret
+    access_key_id               = aws_iam_access_key.boundary.id
+    secret_access_key           = aws_iam_access_key.boundary.secret
+    disable_credential_rotation = true
   })
 }
 
