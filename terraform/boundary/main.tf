@@ -44,11 +44,11 @@ module "ec2_egress_worker" {
   subnet_id                   = local.ec2_egress_worker_subnet_id
 
   user_data_base64 = base64encode(templatefile("${path.module}/templates/userdata.tftpl", {
-    boundary_hcp_cluster_id               = boundary_scope.project.id,
+    boundary_hcp_cluster_id               = local.boundary_hcp_cluster_id,
     vault_ca_public_key_openssh           = local.vault_ca_public_key_openssh,
     controller_generated_activation_token = boundary_worker.ec2_egress_worker.controller_generated_activation_token
   }))
-  user_data_replace_on_change = true
+  user_data_replace_on_change = false
 
   metadata_options = {
     "http_tokens" : "required"
@@ -82,7 +82,7 @@ resource "boundary_scope" "project" {
 }
 
 resource "boundary_credential_store_vault" "ssh" {
-  depends_on = [module.ec2_egress_worker]
+  depends_on = [data.aws_instance.wait_for_ec2_egress_worker]
 
   name          = local.ssh_credential_store
   address       = local.vault_private_endpoint_url
