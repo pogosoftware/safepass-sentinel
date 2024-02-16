@@ -75,3 +75,10 @@ data "aws_iam_policy_document" "boudary_describe_instances" {
     resources = ["*"]
   }
 }
+
+####################################################################################################
+### UTILITIES
+####################################################################################################
+data "aws_instance" "wait_for_ec2_egress_worker" {
+  instance_id = module.ec2_egress_worker.id
+}
