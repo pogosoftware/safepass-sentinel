@@ -3,7 +3,7 @@
 ####################################################################################################
 resource "boundary_worker" "ec2_egress_worker" {
   scope_id                    = "global"
-  name                        = var.boundary_ec2_workers_egress_name
+  name                        = local.ec2_egress_worker_name
   worker_generated_auth_token = ""
 }
 
@@ -34,7 +34,7 @@ module "ec2_egress_worker" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "5.6.0"
 
-  name = var.boundary_ec2_workers_egress_name
+  name = local.ec2_egress_worker_name
 
   ami                         = local.ec2_workers_egress_ami
   associate_public_ip_address = false
@@ -142,7 +142,7 @@ resource "boundary_role" "admin" {
 ### AWS DYNAMIC HOSTS
 ####################################################################################################
 resource "aws_iam_user" "boundary" {
-  name = "boundary"
+  name = local.aws_boundary_username
   path = "/"
 }
 

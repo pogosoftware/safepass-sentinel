@@ -31,7 +31,7 @@ data "terraform_remote_state" "hcp_network" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.hcp_vault_workspace_name
+      name = local.hcp_network_workspace_name
     }
   }
 }
