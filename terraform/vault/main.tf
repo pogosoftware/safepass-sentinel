@@ -71,9 +71,10 @@ resource "vault_kv_secret_v2" "boundary" {
   delete_all_versions = true
   data_json = jsonencode(
     {
-      username    = local.boundary_username,
-      password    = local.boundary_password,
-      vault_token = vault_token.boundary.client_token
+      username                    = local.boundary_username,
+      password                    = local.boundary_password,
+      vault_token                 = vault_token.boundary.client_token,
+      vault_ca_public_key_openssh = tls_private_key.vault.public_key_openssh
     }
   )
 
