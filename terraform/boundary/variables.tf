@@ -27,6 +27,12 @@ variable "hcp_vault_workspace_name" {
   type        = string
 }
 
+variable "hcp_network_workspace_name" {
+  default     = "network-euc1"
+  description = "The name of network TFC workspace"
+  type        = string
+}
+
 ####################################################################################################
 ### HCP BOUNDARY RESOURCES
 ####################################################################################################
@@ -66,5 +72,17 @@ variable "boundary_vault_namespace" {
 variable "aws_region" {
   default     = "eu-central-1"
   description = "The Name of AWS region"
+  type        = string
+}
+
+variable "boundary_ec2_workers_egress_name" {
+  default     = "boundary-egress-worker"
+  description = "The name of Boundary egress worker"
+  type        = string
+}
+
+variable "boundary_ec2_workers_instance_type" {
+  default     = "t2.micro"
+  description = "The type of Boundary worker instance"
   type        = string
 }
