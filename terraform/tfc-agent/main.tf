@@ -2,6 +2,7 @@ locals {
   hcp_network_workspace_name = format("%s-%s", var.hcp_network_workspace_name, var.environment)
 
   ecs_cluster_subnet_id = data.terraform_remote_state.hcp_network.outputs.private_subnet_ids[0]
+  ecs_cluster_public_subnet_id = data.terraform_remote_state.hcp_network.outputs.public_subnet_ids[0]
   ecs_cluster_sg_id     = data.terraform_remote_state.hcp_network.outputs.security_group_ids["tfc-agent"]
 
   ecs_execution_role_name  = format("tfc_agent_ecs_execution_%s", var.environment)
@@ -124,7 +125,7 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     security_groups  = [local.ecs_cluster_sg_id]
-    subnets          = [local.ecs_cluster_subnet_id]
+    subnets          = [local.ecs_cluster_public_subnet_id, local.ecs_cluster_subnet_id]
     assign_public_ip = true
   }
 
