@@ -78,6 +78,15 @@ resource "aws_ecs_task_definition" "this" {
         essential : true
         cpu : var.cpu_units
         memory : var.memory
+        logConfiguration : {
+          logDriver : "awslogs",
+          options : {
+            awslogs-create-group : "true",
+            awslogs-group : "awslogs-tfc-agent"
+            awslogs-region : var.aws_region
+            awslogs-stream-prefix : "awslogs-tfc-agent"
+          }
+        }
         environment = [
           {
             name  = "TFC_AGENT_SINGLE",
