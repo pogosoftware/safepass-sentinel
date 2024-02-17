@@ -89,6 +89,9 @@ variable "network_security_groups" {
     },
     "client-vpn-endpoint" = {
       description = "This is SG for AWS VPN Client"
+    },
+    "tfc-agent" = {
+      description = "This is SG for ECS Cluster for TFC Agents"
     }
   }
   description = "The names of the security groups"
