@@ -90,7 +90,7 @@ resource "vault_jwt_auth_backend" "jwt" {
 resource "vault_policy" "workspaces" {
   for_each = local.vault_jwt_roles
 
-  name      = each.key
+  name      = each.value
   namespace = vault_namespace.devops.path_fq
   policy    = file("templates/${each.key}-policy.hcl")
 }
@@ -100,8 +100,8 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 
   namespace      = vault_namespace.devops.path_fq
   backend        = vault_jwt_auth_backend.jwt.path
-  role_name      = each.key
-  token_policies = ["default", each.key]
+  role_name      = each.value
+  token_policies = ["default", each.value]
 
   bound_audiences   = ["vault.workload.identity"]
   bound_claims_type = "glob"
