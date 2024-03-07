@@ -15,12 +15,6 @@ variable "hcp_project_id" {
   type        = string
 }
 
-variable "hcp_cloud_workspace_name" {
-  default     = "hcp-cloud-euc1"
-  description = "The name of hcp cloud workspace"
-  type        = string
-}
-
 ####################################################################################################
 ### VAULT
 ####################################################################################################
