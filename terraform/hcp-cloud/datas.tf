@@ -1,7 +1,7 @@
 data "hcp_organization" "this" {}
 
 data "tfe_workspace_ids" "workspaces" {
-  names        = values(local.vault_variable_set_workspaces)
+  names        = values(local.vault_jwt_roles)
   organization = data.hcp_organization.this.name
 }
 

@@ -1,8 +1,8 @@
 locals {
   bootstrap_workspace_name = format("sps-bootstrap-%s", var.environment)
 
-  vault_variable_set_workspaces = { for workspace in var.vault_variable_set_workspaces :
-    workspace => format("%s-%s", workspace, var.environment)
+  vault_jwt_roles = {
+    vault = data.terraform_remote_state.bootstrap.outputs.vault_workspace_name
   }
   vault_cluster_id    = format("%s-%s", var.vault_cluster_id, var.environment)
   boundary_cluster_id = format("%s-%s", var.boundary_cluster_id, var.environment)

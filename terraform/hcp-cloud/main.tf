@@ -88,7 +88,7 @@ resource "vault_jwt_auth_backend" "jwt" {
 }
 
 resource "vault_policy" "workspaces" {
-  for_each = local.vault_variable_set_workspaces
+  for_each = local.vault_jwt_roles
 
   name      = each.key
   namespace = vault_namespace.devops.path_fq
@@ -96,7 +96,7 @@ resource "vault_policy" "workspaces" {
 }
 
 resource "vault_jwt_auth_backend_role" "workspaces" {
-  for_each = local.vault_variable_set_workspaces
+  for_each = local.vault_jwt_roles
 
   namespace      = vault_namespace.devops.path_fq
   backend        = vault_jwt_auth_backend.jwt.path
@@ -116,49 +116,32 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 ####################################################################################################
 ### CREATE VARABLE SETS WITH VAULT CREDENTIALS
 ####################################################################################################
-resource "tfe_variable_set" "vault" {
-  for_each = local.vault_variable_set_workspaces
+module "vault_credentials_variable_set" {
+  source  = "pogosoftware/tfe/tfe//modules/variable-set"
+  version = "1.3.0"
 
-  name         = format("SafaPass Sentinel - %s - Vault (%s) Credentials", var.environment, each.value)
-  description  = "This resource is manage by Terraform"
-  organization = data.hcp_organization.this.name
+  name        = format("SafaPass Sentinel - %s - Vault Credentials", var.environment)
+  description = "This resource is manage by Terraform"
+
+  variables = {
+    TFC_VAULT_PROVIDER_AUTH = {
+      value     = true
+      category  = "env"
+      sensitive = true
+    },
+    TFC_VAULT_ADDR = {
+      value     = hcp_vault_cluster.this.vault_public_endpoint_url
+      category  = "env"
+      sensitive = true
+    },
+    TFC_VAULT_NAMESPACE = {
+      value     = format("admin/%s", vault_namespace.devops.path_fq)
+      category  = "env"
+      sensitive = true
+    }
+  }
+
   workspace_ids = [
-    data.tfe_workspace_ids.workspaces.ids[each.value]
+    data.terraform_remote_state.bootstrap.outputs.vault_workspace_id
   ]
-}
-
-resource "tfe_variable" "tfc_vault_provider_auth" {
-  for_each = local.vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_PROVIDER_AUTH"
-  value           = "true"
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "tfc_vault_addr" {
-  for_each = local.vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_ADDR"
-  value           = hcp_vault_cluster.this.vault_public_endpoint_url
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "tfc_vault_namespace" {
-  for_each = local.vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_NAMESPACE"
-  value           = format("admin/%s", vault_namespace.devops.path_fq)
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "tfc_vault_run_role" {
-  for_each = local.vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_RUN_ROLE"
-  value           = each.key
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
 }
