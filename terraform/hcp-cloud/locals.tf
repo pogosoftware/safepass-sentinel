@@ -1,5 +1,5 @@
 locals {
-  network_workspace_name = format("%s-%s", var.network_workspace_name, var.environment)
+  bootstrap_workspace_name = format("sps-bootstrap-%s", var.environment)
 
   vault_variable_set_workspaces = { for workspace in var.vault_variable_set_workspaces :
     workspace => format("%s-%s", workspace, var.environment)

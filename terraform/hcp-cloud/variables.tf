@@ -15,12 +15,6 @@ variable "hcp_project_id" {
   type        = string
 }
 
-variable "network_workspace_name" {
-  default     = "network"
-  description = "The name of network TFC workspace"
-  type        = string
-}
-
 variable "vault_variable_set_workspaces" {
   default     = ["vault-euc1", "boundary-euc1"]
   description = "The namas of workspace that will be using HCP Vault"
