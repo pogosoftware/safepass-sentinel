@@ -1,3 +1,9 @@
+variable "aws_region" {
+  default = "eu-central-1"
+  description = "The name of AWS region"
+  type = string
+}
+
 variable "network_vpc_name" {
   default     = "safepass-sentinel"
   description = "The name of vpc"
