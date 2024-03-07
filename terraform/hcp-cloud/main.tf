@@ -127,17 +127,14 @@ module "vault_credentials_variable_set" {
     TFC_VAULT_PROVIDER_AUTH = {
       value     = true
       category  = "env"
-      sensitive = true
     },
     TFC_VAULT_ADDR = {
       value     = hcp_vault_cluster.this.vault_public_endpoint_url
       category  = "env"
-      sensitive = true
     },
     TFC_VAULT_NAMESPACE = {
       value     = format("admin/%s", vault_namespace.devops.path_fq)
       category  = "env"
-      sensitive = true
     }
   }
 
