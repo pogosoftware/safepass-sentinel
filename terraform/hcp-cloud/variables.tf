@@ -15,13 +15,13 @@ variable "hcp_project_id" {
   type        = string
 }
 
-variable "hcp_network_workspace_name" {
-  default     = "network-euc1"
+variable "network_workspace_name" {
+  default     = "network"
   description = "The name of network TFC workspace"
   type        = string
 }
 
-variable "hcp_vault_variable_set_workspaces" {
+variable "vault_variable_set_workspaces" {
   default     = ["vault-euc1", "boundary-euc1"]
   description = "The namas of workspace that will be using HCP Vault"
   type        = set(string)
@@ -54,19 +54,19 @@ variable "hcp_cloud_cidr_block" {
   type        = string
 }
 
-variable "hcp_cloud_vault_cluster_id" {
+variable "vault_cluster_id" {
   default     = "sefapass-sentinel"
   description = "The name of Valut cluster"
   type        = string
 }
 
-variable "hcp_cloud_vault_public_endpoint" {
+variable "vault_public_endpoint" {
   default     = true
   description = "Determinates to set public endpoint or not"
   type        = bool
 }
 
-variable "hcp_cloud_vault_tier" {
+variable "vault_tier" {
   default     = "dev"
   description = "The name of Vault tier"
   type        = string
@@ -75,13 +75,13 @@ variable "hcp_cloud_vault_tier" {
 ####################################################################################################
 ### HCP BOUNDARY CLUSTER
 ####################################################################################################
-variable "hcp_cloud_boundary_cluster_id" {
+variable "boundary_cluster_id" {
   default     = "safepass-sentinel"
   description = "The ID of the Boundary cluster"
   type        = string
 }
 
-variable "hcp_cloud_boundary_tier" {
+variable "boundary_tier" {
   default     = "Standard"
   description = "The tier that the HCP Boundary cluster will be provisioned as, 'Standard' or 'Plus'"
   type        = string

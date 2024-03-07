@@ -1,10 +1,11 @@
 locals {
-  hcp_network_workspace_name = format("%s-%s", var.hcp_network_workspace_name, var.environment)
-  hcp_vault_variable_set_workspaces = { for workspace in var.hcp_vault_variable_set_workspaces :
+  network_workspace_name = format("%s-%s", var.network_workspace_name, var.environment)
+
+  vault_variable_set_workspaces = { for workspace in var.vault_variable_set_workspaces :
     workspace => format("%s-%s", workspace, var.environment)
   }
-  hcp_cloud_vault_cluster_id    = format("%s-%s", var.hcp_cloud_vault_cluster_id, var.environment)
-  hcp_cloud_boundary_cluster_id = format("%s-%s", var.hcp_cloud_boundary_cluster_id, var.environment)
+  vault_cluster_id    = format("%s-%s", var.vault_cluster_id, var.environment)
+  boundary_cluster_id = format("%s-%s", var.boundary_cluster_id, var.environment)
 
   # boundary
   boundary_username = random_string.boundary_username.result

@@ -9,10 +9,10 @@ resource "hcp_hvn" "this" {
 }
 
 resource "hcp_vault_cluster" "this" {
-  cluster_id      = local.hcp_cloud_vault_cluster_id
+  cluster_id      = local.vault_cluster_id
   hvn_id          = hcp_hvn.this.hvn_id
-  public_endpoint = var.hcp_cloud_vault_public_endpoint
-  tier            = var.hcp_cloud_vault_tier
+  public_endpoint = var.vault_public_endpoint
+  tier            = var.vault_tier
 }
 
 resource "hcp_vault_cluster_admin_token" "this" {
@@ -35,10 +35,10 @@ resource "random_password" "boundary_password" {
 }
 
 resource "hcp_boundary_cluster" "this" {
-  cluster_id = local.hcp_cloud_boundary_cluster_id
+  cluster_id = local.boundary_cluster_id
   username   = local.boundary_username
   password   = local.boundary_password
-  tier       = var.hcp_cloud_boundary_tier
+  tier       = var.boundary_tier
 }
 
 ####################################################################################################
@@ -88,7 +88,7 @@ resource "vault_jwt_auth_backend" "jwt" {
 }
 
 resource "vault_policy" "workspaces" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   name      = each.key
   namespace = vault_namespace.devops.path_fq
@@ -96,7 +96,7 @@ resource "vault_policy" "workspaces" {
 }
 
 resource "vault_jwt_auth_backend_role" "workspaces" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   namespace      = vault_namespace.devops.path_fq
   backend        = vault_jwt_auth_backend.jwt.path
@@ -117,7 +117,7 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 ### CREATE VARABLE SETS WITH VAULT CREDENTIALS
 ####################################################################################################
 resource "tfe_variable_set" "vault" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   name         = format("SafaPass Sentinel - %s - Vault (%s) Credentials", var.environment, each.value)
   description  = "This resource is manage by Terraform"
@@ -128,7 +128,7 @@ resource "tfe_variable_set" "vault" {
 }
 
 resource "tfe_variable" "tfc_vault_provider_auth" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   key             = "TFC_VAULT_PROVIDER_AUTH"
   value           = "true"
@@ -137,7 +137,7 @@ resource "tfe_variable" "tfc_vault_provider_auth" {
 }
 
 resource "tfe_variable" "tfc_vault_addr" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   key             = "TFC_VAULT_ADDR"
   value           = hcp_vault_cluster.this.vault_public_endpoint_url
@@ -146,7 +146,7 @@ resource "tfe_variable" "tfc_vault_addr" {
 }
 
 resource "tfe_variable" "tfc_vault_namespace" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   key             = "TFC_VAULT_NAMESPACE"
   value           = format("admin/%s", vault_namespace.devops.path_fq)
@@ -155,7 +155,7 @@ resource "tfe_variable" "tfc_vault_namespace" {
 }
 
 resource "tfe_variable" "tfc_vault_run_role" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_variable_set_workspaces
 
   key             = "TFC_VAULT_RUN_ROLE"
   value           = each.key
