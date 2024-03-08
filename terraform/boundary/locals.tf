@@ -1,13 +1,14 @@
 locals {
-  # hcp
-  hcp_cloud_workspace_name   = format("%s-%s", var.hcp_cloud_workspace_name, var.environment)
-  hcp_vault_workspace_name   = format("%s-%s", var.hcp_vault_workspace_name, var.environment)
-  hcp_network_workspace_name = format("%s-%s", var.hcp_network_workspace_name, var.environment)
+  bootstrap_workspace_name = format("sps-bootstrap-%s", var.environment)
+
+  # boundary user
+  boundary_user_access_key_id     = data.terraform_remote_state.bootstrap.outputs.boundary_user_access_key_id
+  boundary_user_secret_access_key = data.terraform_remote_state.bootstrap.outputs.boundary_user_access_key_encrypted_secret
 
   # boundary
-  boundary_cluster_url       = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
-  boundary_hcp_cluster_id    = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_id
-  vault_private_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_private_endpoint_url
+  boundary_cluster_url      = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
+  boundary_hcp_cluster_id   = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_id
+  vault_public_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_public_endpoint_url
 
   boundary_vault_mount_name  = data.terraform_remote_state.hcp_vault.outputs.vault_apps_mount_name
   boundary_vault_secret_name = data.terraform_remote_state.hcp_vault.outputs.vault_apps_boundary_secret_name

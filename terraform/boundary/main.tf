@@ -7,9 +7,13 @@ resource "boundary_worker" "ec2_egress_worker" {
   worker_generated_auth_token = ""
 }
 
-resource "aws_key_pair" "ansible" {
-  key_name   = "ansible"
-  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDjkJm/8rzkU0MwHUQkIUrxOJwuSDY1KwjutsOAD1kGP"
+resource "tls_private_key" "ec2_egress_worker" {
+  algorithm = "ED25519"
+}
+
+resource "aws_key_pair" "ec2_egress_worker" {
+  key_name   = "ec2_egress_worker"
+  public_key = tls_private_key.ec2_egress_worker.public_key_openssh
 }
 
 resource "aws_security_group_rule" "ec2_egress_worker_allow_all_egress" {
@@ -30,16 +34,11 @@ resource "aws_security_group_rule" "ec2_egress_worker_allow_ssh_ingress" {
   security_group_id = local.ec2_egress_worker_sg_id
 }
 
-module "ec2_egress_worker" {
-  source  = "terraform-aws-modules/ec2-instance/aws"
-  version = "5.6.0"
-
-  name = local.ec2_egress_worker_name
-
+resource "aws_instance" "ec2_egress_worker" {
   ami                         = local.ec2_workers_egress_ami
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   instance_type               = var.boundary_ec2_workers_instance_type
-  key_name                    = aws_key_pair.ansible.key_name
+  key_name                    = aws_key_pair.ec2_egress_worker.key_name
   vpc_security_group_ids      = [local.ec2_egress_worker_sg_id]
   subnet_id                   = local.ec2_egress_worker_subnet_id
 
@@ -48,17 +47,29 @@ module "ec2_egress_worker" {
     vault_ca_public_key_openssh           = local.vault_ca_public_key_openssh,
     controller_generated_activation_token = boundary_worker.ec2_egress_worker.controller_generated_activation_token
   }))
-  user_data_replace_on_change = false
+  user_data_replace_on_change = true
 
-  metadata_options = {
-    "http_tokens" : "required"
+  metadata_options {
+    http_tokens = "required"
   }
 
   tags = {
+    Name          = local.ec2_egress_worker_name
     ProjectID     = var.hcp_project_id
     Environment   = var.environment
-    InstanceGroup = "Boundary_Egress_Workers"
+    InstanceGroup = "EC2_Egress_Workers"
   }
+
+  # provisioner "remote-exec" {
+  #   connection {
+  #     type        = "ssh"
+  #     host        = self.private_ip
+  #     user        = "ubuntu"
+  #     private_key = tls_private_key.ec2_egress_worker.private_key_openssh
+  #   }
+
+  #   inline = ["cloud-init status --wait"]
+  # }
 }
 
 ####################################################################################################
@@ -81,22 +92,15 @@ resource "boundary_scope" "project" {
   auto_create_default_role = true
 }
 
-/* TODO
-This can be fixed when it will be available TFC agent.
-Add provisioner to wait until cloud-init finished its job
-```
-cloud-init status --wait
-```
-*/
 resource "boundary_credential_store_vault" "ssh" {
-  depends_on = [module.ec2_egress_worker]
+  depends_on = [aws_instance.ec2_egress_worker]
 
   name          = local.ssh_credential_store
-  address       = local.vault_private_endpoint_url
+  address       = local.vault_public_endpoint_url
   token         = local.vault_client_token
   scope_id      = boundary_scope.project.id
   namespace     = local.vault_namespace
-  worker_filter = "\"Boundary_Egress_Workers\" in \"/tags/InstanceGroup\""
+  worker_filter = "\"EC2_Egress_Workers\" in \"/tags/InstanceGroup\""
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "ssh" {
@@ -148,21 +152,6 @@ resource "boundary_role" "admin" {
 ####################################################################################################
 ### AWS DYNAMIC HOSTS
 ####################################################################################################
-resource "aws_iam_user" "boundary" {
-  name = local.aws_boundary_username
-  path = "/"
-}
-
-resource "aws_iam_access_key" "boundary" {
-  user = aws_iam_user.boundary.name
-}
-
-resource "aws_iam_user_policy" "boundary_describe_instances" {
-  name   = "BoundaryDescribeInstances"
-  user   = aws_iam_user.boundary.name
-  policy = data.aws_iam_policy_document.boudary_describe_instances.json
-}
-
 resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
   name            = "boundary egress workers"
   scope_id        = boundary_scope.project.id
@@ -170,8 +159,8 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
   attributes_json = jsonencode({ "region" = var.aws_region })
 
   secrets_json = jsonencode({
-    access_key_id               = aws_iam_access_key.boundary.id
-    secret_access_key           = aws_iam_access_key.boundary.secret
+    access_key_id               = local.boundary_user_access_key_id
+    secret_access_key           = base64decode(local.boundary_user_secret_access_key)
     disable_credential_rotation = true
   })
 }
