@@ -139,6 +139,8 @@ module "vault_credentials_variable_set" {
   }
 
   workspace_ids = [
-    data.terraform_remote_state.bootstrap.outputs.vault_workspace_id
+    data.terraform_remote_state.bootstrap.outputs.vault_workspace_id,
+    data.terraform_remote_state.bootstrap.outputs.boundary_workspace_id
+
   ]
 }
