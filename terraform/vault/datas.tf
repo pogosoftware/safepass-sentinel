@@ -6,7 +6,7 @@ data "terraform_remote_state" "bootstrap" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.bootstrap_workspace_name
+      name = var.bootstrap_workspace_name
     }
   }
 }
@@ -17,7 +17,7 @@ data "terraform_remote_state" "hcp_cloud" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = data.terraform_remote_state.bootstrap.outputs.hcp_cloud_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["hcp_cloud"]
     }
   }
 }
