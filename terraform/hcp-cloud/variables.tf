@@ -7,6 +7,11 @@ variable "environment" {
   type        = string
 }
 
+variable "bootstrap_workspace_name" {
+  description = "The name of bootstrap workspace"
+  type        = string
+}
+
 ####################################################################################################
 ### HCP CLOUD
 ####################################################################################################

@@ -90,7 +90,7 @@ resource "vault_jwt_auth_backend" "jwt" {
 resource "vault_policy" "workspaces" {
   for_each = local.vault_jwt_roles
 
-  name      = each.value
+  name      = each.value.name
   namespace = vault_namespace.devops.path_fq
   policy    = file("templates/${each.key}-policy.hcl")
 }
@@ -100,8 +100,8 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 
   namespace      = vault_namespace.devops.path_fq
   backend        = vault_jwt_auth_backend.jwt.path
-  role_name      = each.value
-  token_policies = ["default", each.value]
+  role_name      = each.value.name
+  token_policies = ["default", each.value.name]
 
   bound_audiences   = ["vault.workload.identity"]
   bound_claims_type = "glob"
@@ -125,22 +125,27 @@ module "vault_credentials_variable_set" {
 
   variables = {
     TFC_VAULT_PROVIDER_AUTH = {
-      value     = true
-      category  = "env"
+      value    = true
+      category = "env"
     },
     TFC_VAULT_ADDR = {
-      value     = hcp_vault_cluster.this.vault_public_endpoint_url
-      category  = "env"
+      value    = hcp_vault_cluster.this.vault_public_endpoint_url
+      category = "env"
     },
     TFC_VAULT_NAMESPACE = {
-      value     = format("admin/%s", vault_namespace.devops.path_fq)
-      category  = "env"
+      value    = format("admin/%s", vault_namespace.devops.path_fq)
+      category = "env"
     }
   }
 
-  workspace_ids = [
-    data.terraform_remote_state.bootstrap.outputs.vault_workspace_id,
-    data.terraform_remote_state.bootstrap.outputs.boundary_workspace_id
+  workspace_ids = [for x in local.vault_jwt_roles : x.id]
+}
 
-  ]
+resource "tfe_variable" "tfe_vault_run_role_workspace_variable" {
+  for_each = { for x in local.vault_jwt_roles : x.name => x.id }
+
+  key          = "TFC_VAULT_RUN_ROLE"
+  value        = each.key
+  category     = "env"
+  workspace_id = each.value
 }
