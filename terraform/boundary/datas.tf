@@ -9,7 +9,7 @@ data "terraform_remote_state" "bootstrap" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.bootstrap_workspace_name
+      name = var.bootstrap_workspace_name
     }
   }
 }
@@ -20,29 +20,29 @@ data "terraform_remote_state" "hcp_cloud" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = data.terraform_remote_state.bootstrap.outputs.hcp_cloud_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["hcp_cloud"].name
     }
   }
 }
 
-data "terraform_remote_state" "hcp_vault" {
+data "terraform_remote_state" "vault" {
   backend = "remote"
 
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = data.terraform_remote_state.bootstrap.outputs.vault_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["vault"].name
     }
   }
 }
 
-data "terraform_remote_state" "hcp_network" {
+data "terraform_remote_state" "network" {
   backend = "remote"
 
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = data.terraform_remote_state.bootstrap.outputs.network_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["network"].name
     }
   }
 }
