@@ -17,7 +17,7 @@ data "terraform_remote_state" "hcp_cloud" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = data.terraform_remote_state.bootstrap.outputs.workspaces["hcp_cloud"]
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["hcp_cloud"].name
     }
   }
 }
