@@ -169,7 +169,7 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
   scope_id        = boundary_scope.project.id
   plugin_name     = "aws"
   attributes_json = jsonencode({
-    "disable_credential_rotation" = "true",
+    "disable_credential_rotation" = true,
     "region" = var.aws_region 
   })
 
