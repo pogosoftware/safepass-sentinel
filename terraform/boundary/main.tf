@@ -202,3 +202,19 @@ resource "boundary_host_set_plugin" "ec2_egress_workers" {
 #   host_catalog_id = boundary_host_catalog_plugin.egress_workers.id
 #   attributes_json = jsonencode({ "filters" = ["tag:InstanceGroup=RDS_Postgres"] })
 # }
+
+### TARGETS
+resource "boundary_target" "ec2_egress_workers" {
+  name         = "boundary egress workers"
+  type         = "ssh"
+  default_port = "22"
+  scope_id     = boundary_scope.project.id
+  host_source_ids = [
+    boundary_host_set_plugin.ec2_egress_workers.id
+  ]
+  injected_application_credential_source_ids = [
+    boundary_credential_library_vault_ssh_certificate.ssh.id
+  ]
+}
+
+
