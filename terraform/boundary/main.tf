@@ -182,7 +182,7 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
 resource "boundary_host_set_plugin" "ec2_egress_workers" {
   name            = "boudary egress workers"
   host_catalog_id = boundary_host_catalog_plugin.ec2_egress_workers.id
-  attributes_json = jsonencode({ "filters" = ["tag:InstanceGroup=EC2_Egress_Workers"] })
+  attributes_json = jsonencode({ "filters" = ["tag:InstanceGroup=EC2_Egress_Worker"] })
 }
 
 # resource "boundary_host_catalog_plugin" "postgres" {
