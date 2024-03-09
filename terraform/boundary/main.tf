@@ -42,7 +42,7 @@ resource "aws_security_group_rule" "ec2_egress_worker_allow_ssh_ingress" {
 
 resource "aws_instance" "ec2_egress_worker" {
   ami                         = local.ec2_workers_egress_ami
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   instance_type               = var.boundary_ec2_workers_instance_type
   key_name                    = aws_key_pair.ec2_egress_worker.key_name
   vpc_security_group_ids      = [local.ec2_egress_worker_sg_id]
