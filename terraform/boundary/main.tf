@@ -160,7 +160,7 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
 
   secrets_json = jsonencode({
     access_key_id               = local.boundary_user_access_key_id
-    secret_access_key           = base64decode(local.boundary_user_secret_access_key)
+    secret_access_key           = local.boundary_user_access_key_secret
   })
 }
 

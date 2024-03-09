@@ -1,7 +1,7 @@
 locals {
   # boundary user
   boundary_user_access_key_id     = data.terraform_remote_state.bootstrap.outputs.boundary_user_access_key_id
-  boundary_user_secret_access_key = data.terraform_remote_state.bootstrap.outputs.boundary_user_access_key_encrypted_secret
+  boundary_user_access_key_secret = data.terraform_remote_state.bootstrap.outputs.boundary_user_access_key_secret
 
   # boundary
   boundary_cluster_url      = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
