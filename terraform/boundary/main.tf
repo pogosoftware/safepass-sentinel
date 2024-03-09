@@ -215,6 +215,7 @@ resource "boundary_target" "ec2_egress_workers" {
   injected_application_credential_source_ids = [
     boundary_credential_library_vault_ssh_certificate.ssh.id
   ]
+  egress_worker_filter = "\"egress\" in \"/tags/worker\""
 }
 
 
