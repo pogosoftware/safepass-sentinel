@@ -5,6 +5,12 @@ resource "boundary_worker" "ec2_egress_worker" {
   scope_id                    = "global"
   name                        = local.ec2_egress_worker_name
   worker_generated_auth_token = ""
+
+  lifecycle {
+    ignore_changes = [
+      worker_generated_auth_token
+    ]
+  }
 }
 
 resource "tls_private_key" "ec2_egress_worker" {
@@ -47,7 +53,7 @@ resource "aws_instance" "ec2_egress_worker" {
     vault_ca_public_key_openssh           = local.vault_ca_public_key_openssh,
     controller_generated_activation_token = boundary_worker.ec2_egress_worker.controller_generated_activation_token
   }))
-  user_data_replace_on_change = true
+  user_data_replace_on_change = false
 
   metadata_options {
     http_tokens = "required"
@@ -70,6 +76,12 @@ resource "aws_instance" "ec2_egress_worker" {
 
   #   inline = ["cloud-init status --wait"]
   # }
+
+  lifecycle {
+    ignore_changes = [
+      user_data_base64
+    ]
+  }
 }
 
 ####################################################################################################
@@ -156,7 +168,10 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
   name            = "boundary egress workers"
   scope_id        = boundary_scope.project.id
   plugin_name     = "aws"
-  attributes_json = jsonencode({ "region" = var.aws_region })
+  attributes_json = jsonencode({
+    "disable_credential_rotation" = "true",
+    "region" = var.aws_region 
+  })
 
   secrets_json = jsonencode({
     access_key_id               = local.boundary_user_access_key_id
