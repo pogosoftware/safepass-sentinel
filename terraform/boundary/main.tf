@@ -57,7 +57,7 @@ resource "aws_instance" "ec2_egress_worker" {
     Name          = local.ec2_egress_worker_name
     ProjectID     = var.hcp_project_id
     Environment   = var.environment
-    InstanceGroup = "EC2_Egress_Workers"
+    InstanceGroup = "EC2_Egress_Worker"
   }
 
   # provisioner "remote-exec" {
@@ -100,7 +100,7 @@ resource "boundary_credential_store_vault" "ssh" {
   token         = local.vault_client_token
   scope_id      = boundary_scope.project.id
   namespace     = local.vault_namespace
-  worker_filter = "\"EC2_Egress_Workers\" in \"/tags/InstanceGroup\""
+  worker_filter = "\"egress\" in \"/tags/worker\""
 }
 
 resource "boundary_credential_library_vault_ssh_certificate" "ssh" {

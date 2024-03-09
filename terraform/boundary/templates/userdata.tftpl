@@ -30,7 +30,7 @@ worker {
   controller_generated_activation_token = "${controller_generated_activation_token}"
   auth_storage_path = "/var/lib/boundary"
   tags {
-    InstanceGroup = ["EC2_Egress_Workers"]
+    worker = ["egress"]
   }
 }
 CONTENT
