@@ -3,13 +3,24 @@ data "hcp_organization" "this" {}
 ####################################################################################################
 ### REMOTE STATES
 ####################################################################################################
-data "terraform_remote_state" "hcp_network" {
+data "terraform_remote_state" "bootstrap" {
   backend = "remote"
 
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.hcp_network_workspace_name
+      name = var.bootstrap_workspace_name
+    }
+  }
+}
+
+data "terraform_remote_state" "network" {
+  backend = "remote"
+
+  config = {
+    organization = data.hcp_organization.this.name
+    workspaces = {
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["network"].name
     }
   }
 }
@@ -25,5 +36,13 @@ data "aws_iam_policy_document" "task_assume_role_policy" {
       type        = "Service"
       identifiers = ["ecs-tasks.amazonaws.com"]
     }
+  }
+}
+
+data "aws_iam_policy_document" "ecs_cluster" {
+  statement {
+    effect    = "Allow"
+    actions   = ["ssm:GetParameters"]
+    resources = [aws_ssm_parameter.agent_token.arn]
   }
 }

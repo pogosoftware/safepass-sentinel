@@ -7,17 +7,16 @@ variable "environment" {
   type        = string
 }
 
+variable "bootstrap_workspace_name" {
+  description = "The name of bootstrap workspace"
+  type        = string
+}
+
 ####################################################################################################
 ### HCP
 ####################################################################################################
 variable "hcp_project_id" {
   description = "The UUID of HCP project"
-  type        = string
-}
-
-variable "hcp_network_workspace_name" {
-  default     = "network-euc1"
-  description = "The name of network TFC workspace"
   type        = string
 }
 
@@ -47,12 +46,12 @@ variable "ecs_task_desired_count" {
 
 variable "cpu_units" {
   description = "Amount of CPU units for a single ECS task"
-  default     = 256
+  default     = 512
   type        = number
 }
 
 variable "memory" {
   description = "Amount of memory in MB for a single ECS task"
-  default     = 512
+  default     = 1024
   type        = number
 }
