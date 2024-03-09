@@ -1,6 +1,6 @@
 locals {
-  ecs_cluster_subnet_id = data.terraform_remote_state.network.outputs.private_subnet_ids[0]
-  # ecs_cluster_public_subnet_id = data.terraform_remote_state.hcp_network.outputs.public_subnet_ids[0]
+  ecs_cluster_private_subnet_id = data.terraform_remote_state.network.outputs.private_subnet_ids[0]
+  ecs_cluster_public_subnet_id = data.terraform_remote_state.hcp_network.outputs.public_subnet_ids[0]
   ecs_cluster_sg_id = data.terraform_remote_state.network.outputs.security_group_ids["tfc-agent"]
 
   ecs_cluster_role_name    = format("safepass_sentinel_ecs_%s", var.environment)

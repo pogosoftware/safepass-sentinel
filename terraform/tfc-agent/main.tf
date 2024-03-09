@@ -117,8 +117,8 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     security_groups  = [local.ecs_cluster_sg_id]
-    subnets          = [local.ecs_cluster_subnet_id]
-    assign_public_ip = false
+    subnets          = [local.ecs_cluster_public_subnet_id, local.ecs_cluster_private_subnet_id]
+    assign_public_ip = true
   }
 
   tags = {
