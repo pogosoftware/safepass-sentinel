@@ -217,5 +217,3 @@ resource "boundary_target" "ec2_egress_workers" {
   ]
   egress_worker_filter = "\"egress\" in \"/tags/worker\""
 }
-
-
