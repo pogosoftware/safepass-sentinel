@@ -46,7 +46,7 @@ variable "ecs_task_desired_count" {
 
 variable "cpu_units" {
   description = "Amount of CPU units for a single ECS task"
-  default     = 512
+  default     = 1024
   type        = number
 }
 
