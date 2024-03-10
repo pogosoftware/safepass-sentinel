@@ -6,7 +6,7 @@ locals {
   # boundary
   boundary_cluster_url      = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
   boundary_hcp_cluster_id   = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_id
-  vault_public_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_public_endpoint_url
+  vault_private_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_private_endpoint_url
 
   boundary_vault_mount_name  = data.terraform_remote_state.vault.outputs.vault_apps_mount_name
   boundary_vault_secret_name = data.terraform_remote_state.vault.outputs.vault_apps_boundary_secret_name

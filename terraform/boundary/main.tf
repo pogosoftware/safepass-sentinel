@@ -108,7 +108,7 @@ resource "boundary_credential_store_vault" "ssh" {
   depends_on = [aws_instance.ec2_egress_worker]
 
   name          = local.ssh_credential_store
-  address       = local.vault_public_endpoint_url
+  address       = local.vault_private_endpoint_url
   token         = local.vault_client_token
   scope_id      = boundary_scope.project.id
   namespace     = local.vault_namespace
