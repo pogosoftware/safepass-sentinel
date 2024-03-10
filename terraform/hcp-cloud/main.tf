@@ -137,7 +137,7 @@ module "vault_credentials_variable_set" {
       category = "env"
     },
     TFC_VAULT_ADDR = {
-      value    = hcp_vault_cluster.this.vault_public_endpoint_url
+      value    = hcp_vault_cluster.this.vault_private_endpoint_url
       category = "env"
     },
     TFC_VAULT_NAMESPACE = {
