@@ -79,6 +79,8 @@ resource "aws_route" "private_to_hvn" {
 ### VAULT - JWT AUTH ROLE FOR TFC
 ####################################################################################################
 resource "vault_namespace" "env" {
+  depends_on = [ aws_route.private_to_hvn ]
+  
   path = var.environment
 }
 
