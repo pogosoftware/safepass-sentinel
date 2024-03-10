@@ -70,7 +70,7 @@ resource "aws_vpc_peering_connection_accepter" "peer" {
 resource "aws_route" "private_to_hvn" {
   for_each = local.private_route_table_ids
 
-  route_table_id            = aws_route_table.testing.id
+  route_table_id            = each.key
   destination_cidr_block    = var.hcp_cloud_cidr_block
   vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peer.vpc_peering_connection_id
 }
