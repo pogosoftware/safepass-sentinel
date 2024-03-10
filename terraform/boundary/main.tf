@@ -218,3 +218,15 @@ resource "boundary_target" "ec2_egress_workers" {
   ]
   egress_worker_filter = "\"egress\" in \"/tags/worker\""
 }
+
+resource "boundary_target" "vault" {
+  name                     = format("HCP Vault - %s", var.environment)
+  type                     = "tcp"
+  default_port             = 8200
+  default_client_port      = 8200
+  scope_id                 = boundary_scope.project.id
+  address                  = replace(replace(local.vault_private_endpoint_url, "https://", ""), ":8200", "")
+  session_max_seconds      = 3600
+  egress_worker_filter     = "\"egress\" in \"/tags/worker\""
+  session_connection_limit = 2
+}

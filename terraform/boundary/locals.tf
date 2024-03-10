@@ -4,8 +4,8 @@ locals {
   boundary_user_access_key_secret = data.terraform_remote_state.bootstrap.outputs.boundary_user_access_key_secret
 
   # boundary
-  boundary_cluster_url      = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
-  boundary_hcp_cluster_id   = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_id
+  boundary_cluster_url       = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_url
+  boundary_hcp_cluster_id    = data.terraform_remote_state.hcp_cloud.outputs.hcp_boundary_cluster_id
   vault_private_endpoint_url = data.terraform_remote_state.hcp_cloud.outputs.hcp_vault_private_endpoint_url
 
   boundary_vault_mount_name  = data.terraform_remote_state.vault.outputs.vault_apps_mount_name
