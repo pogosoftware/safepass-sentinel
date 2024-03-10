@@ -52,7 +52,7 @@ resource "aws_iam_role" "ecs_task" {
 resource "aws_security_group_rule" "allow_443_egress" {
   type              = "egress"
   to_port           = 443
-  protocol          = "-1"
+  protocol          = "tcp"
   from_port         = 443
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = local.ecs_cluster_sg_id
@@ -61,7 +61,7 @@ resource "aws_security_group_rule" "allow_443_egress" {
 resource "aws_security_group_rule" "allow_8200_egress" {
   type              = "egress"
   to_port           = 8200
-  protocol          = "-1"
+  protocol          = "tcp"
   from_port         = 8200
   cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = local.ecs_cluster_sg_id
