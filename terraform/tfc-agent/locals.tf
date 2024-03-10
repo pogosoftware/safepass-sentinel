@@ -11,4 +11,9 @@ locals {
 
   tfc_agent_pool_name = format("Safepass_Sentinel_%s", var.environment)
   tfc_agent_name      = format("Safepass_Sentinel_%s", var.environment)
+
+  execution_mode_agent_workspaces = {
+    vault    = data.terraform_remote_state.hcp_cloud.outputs.workspaces["vault"].id
+    boundary = data.terraform_remote_state.hcp_cloud.outputs.workspaces["boundary"].id
+  }
 }

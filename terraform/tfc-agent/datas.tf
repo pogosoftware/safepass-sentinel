@@ -25,6 +25,17 @@ data "terraform_remote_state" "network" {
   }
 }
 
+data "terraform_remote_state" "hcp_cloud" {
+  backend = "remote"
+
+  config = {
+    organization = data.hcp_organization.this.name
+    workspaces = {
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["hcp_cloud"].name
+    }
+  }
+}
+
 ########################################################################################################################
 ## IAM Role for ECS Task execution
 ########################################################################################################################

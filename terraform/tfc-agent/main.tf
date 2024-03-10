@@ -168,3 +168,14 @@ resource "aws_ecs_service" "this" {
     Name = local.ecs_service_name
   }
 }
+
+########################################################################################################################
+## Attach agent pool to a workspaces
+########################################################################################################################
+resource "tfe_workspace_settings" "agents" {
+  for_each = local.execution_mode_agent_workspaces
+
+  workspace_id   = each.value
+  execution_mode = "agent"
+  agent_pool_id = tfe_agent_pool.this.id
+}
