@@ -26,3 +26,13 @@ output "public_subnet_ids" {
 output "security_group_ids" {
   value = { for sg_name, sg in aws_security_group.this : sg_name => sg.id }
 }
+
+output "public_route_table_ids" {
+  description = "List of IDs of public route tables"
+  value       = module.vpc.public_route_table_ids
+}
+
+output "private_route_table_ids" {
+  description = "List of IDs of private route tables"
+  value       = module.vpc.private_route_table_ids
+}
