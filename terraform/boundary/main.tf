@@ -165,24 +165,25 @@ resource "boundary_role" "admin" {
 ### AWS DYNAMIC HOSTS
 ####################################################################################################
 resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
-  name            = "boundary egress workers"
-  scope_id        = boundary_scope.project.id
-  plugin_name     = "aws"
+  name        = "boundary egress workers"
+  scope_id    = boundary_scope.project.id
+  plugin_name = "aws"
   attributes_json = jsonencode({
     "disable_credential_rotation" = true,
-    "region" = var.aws_region 
+    "region"                      = var.aws_region
   })
 
   secrets_json = jsonencode({
-    access_key_id               = local.boundary_user_access_key_id
-    secret_access_key           = local.boundary_user_access_key_secret
+    access_key_id     = local.boundary_user_access_key_id
+    secret_access_key = local.boundary_user_access_key_secret
   })
 }
 
 resource "boundary_host_set_plugin" "ec2_egress_workers" {
-  name            = "boudary egress workers"
-  host_catalog_id = boundary_host_catalog_plugin.ec2_egress_workers.id
-  attributes_json = jsonencode({ "filters" = ["tag:InstanceGroup=EC2_Egress_Worker"] })
+  name                  = "boudary egress workers"
+  host_catalog_id       = boundary_host_catalog_plugin.ec2_egress_workers.id
+  attributes_json       = jsonencode({ "filters" = ["tag:InstanceGroup=EC2_Egress_Worker"] })
+  sync_interval_seconds = var.sync_interval_seconds
 }
 
 # resource "boundary_host_catalog_plugin" "postgres" {

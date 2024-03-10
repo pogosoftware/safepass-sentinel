@@ -71,6 +71,11 @@ variable "boundary_vault_namespace" {
   type        = string
 }
 
+variable "sync_interval_seconds" {
+  default     = 60
+  description = "Number of seconds between the time Boundary syncs hosts in this set"
+  type        = number
+}
 ####################################################################################################
 ### AWS
 ####################################################################################################
