@@ -23,7 +23,7 @@ resource "aws_ssm_parameter" "agent_token" {
 ## IAM Role for ECS Task execution
 ########################################################################################################################
 resource "aws_iam_role" "tfc_agents" {
-  name               = "tfc-agents"
+  name               = local.ecs_cluster_role_name
   assume_role_policy = data.aws_iam_policy_document.task_assume_role_policy.json
 }
 
@@ -82,8 +82,8 @@ resource "aws_ecs_task_definition" "this" {
   container_definitions = jsonencode(
     [
       {
-        name : "tfc-agent"
-        image : "hashicorp/tfc-agent:latest"
+        name : local.tfc_agent_name
+        image : var.image
         cpu : 512,
         memory : 2048,
         essential : true,
