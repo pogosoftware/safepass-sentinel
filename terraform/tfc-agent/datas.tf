@@ -39,10 +39,15 @@ data "aws_iam_policy_document" "task_assume_role_policy" {
   }
 }
 
-data "aws_iam_policy_document" "ecs_cluster" {
+data "aws_iam_policy_document" "tfc_agent_inline" {
   statement {
     effect    = "Allow"
     actions   = ["ssm:GetParameters"]
     resources = [aws_ssm_parameter.agent_token.arn]
+  }
+  statement {
+    effect    = "Allow"
+    actions   = ["logs:CreateLogGroup"]
+    resources = ["*"]
   }
 }

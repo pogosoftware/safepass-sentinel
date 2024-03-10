@@ -13,7 +13,7 @@ resource "tfe_agent_token" "this" {
 }
 
 resource "aws_ssm_parameter" "agent_token" {
-  name        = "tfc-agent-token-${var.environment}"
+  name        = "/secret/terraform/agent-token-${var.environment}"
   description = "Terraform Cloud agent token"
   type        = "SecureString"
   value       = tfe_agent_token.this.token
@@ -22,21 +22,20 @@ resource "aws_ssm_parameter" "agent_token" {
 ########################################################################################################################
 ## IAM Role for ECS Task execution
 ########################################################################################################################
-resource "aws_iam_role" "ecs_cluster" {
-  name               = local.ecs_cluster_role_name
+resource "aws_iam_role" "tfc_agents" {
+  name               = "tfc-agents"
   assume_role_policy = data.aws_iam_policy_document.task_assume_role_policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_cluster" {
-  role       = aws_iam_role.ecs_cluster.name
+resource "aws_iam_role_policy_attachment" "tfc_agents_task_execution_role" {
+  role       = aws_iam_role.tfc_agents.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_iam_role_policy" "ecs_task" {
-  name = local.ecs_cluster_role_name
-  role = aws_iam_role.ecs_cluster.id
-
-  policy = data.aws_iam_policy_document.ecs_cluster.json
+resource "aws_iam_role_policy" "tfs_agents_inline" {
+  name   = "additional_permissions"
+  role   = aws_iam_role.tfc_agents.name
+  policy = data.aws_iam_policy_document.tfc_agent_inline.json
 }
 
 ########################################################################################################################
@@ -45,6 +44,18 @@ resource "aws_iam_role_policy" "ecs_task" {
 resource "aws_iam_role" "ecs_task" {
   name               = local.ecs_task_role_name
   assume_role_policy = data.aws_iam_policy_document.task_assume_role_policy.json
+}
+
+########################################################################################################################
+## SECURITY GROUP RULES
+########################################################################################################################
+resource "aws_security_group_rule" "allow_443_egress" {
+  type              = "egress"
+  to_port           = 443
+  protocol          = "-1"
+  from_port         = 443
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.ecs_cluster_sg_id
 }
 
 ########################################################################################################################
@@ -65,20 +76,25 @@ resource "aws_ecs_task_definition" "this" {
   family                   = local.ecs_task_definition_name
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
-  execution_role_arn       = aws_iam_role.ecs_cluster.arn
-  task_role_arn            = aws_iam_role.ecs_task.arn
-  cpu                      = var.cpu_units
-  memory                   = var.memory
+  execution_role_arn       = aws_iam_role.tfc_agents.arn
+  cpu    = var.cpu_units
+  memory = var.memory
   container_definitions = jsonencode(
     [
       {
         name : "tfc-agent"
-        image : var.image
-        essential : true
+        image : "hashicorp/tfc-agent:latest"
+        cpu : 512,
+        memory : 2048,
+        essential : true,
         environment = [
           {
+            name  = "TFC_ADDRESS",
+            value = "https://app.terraform.io"
+          },
+          {
             name  = "TFC_AGENT_NAME",
-            value = local.tfc_agent_name
+            value = "tfc-agent"
           }
         ]
         secrets = [
@@ -87,6 +103,15 @@ resource "aws_ecs_task_definition" "this" {
             valueFrom = aws_ssm_parameter.agent_token.arn
           }
         ]
+        logConfiguration : {
+          logDriver : "awslogs",
+          options : {
+            awslogs-create-group : "true",
+            awslogs-group : "/aws/fargate/service/tfc-agent-ecs"
+            awslogs-region : var.aws_region
+            awslogs-stream-prefix : "tfc-agent"
+          }
+        }
       }
     ]
   )
@@ -109,6 +134,7 @@ resource "aws_ecs_service" "this" {
   cluster         = aws_ecs_cluster.this.id
   task_definition = aws_ecs_task_definition.this.arn
   desired_count   = var.ecs_task_desired_count
+  launch_type     = "FARGATE"
 
   capacity_provider_strategy {
     weight            = 1
@@ -117,8 +143,8 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     security_groups  = [local.ecs_cluster_sg_id]
-    subnets          = [local.ecs_cluster_public_subnet_id]
-    assign_public_ip = true
+    subnets          = [local.ecs_cluster_private_subnet_id]
+    assign_public_ip = false
   }
 
   tags = {
