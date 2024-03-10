@@ -145,7 +145,7 @@ module "hcp_cloud_workspace" {
       category = "env"
     },
     bootstrap_workspace_name = {
-      value = terraform.workspace
+      value    = terraform.workspace
       category = "terraform"
     }
   }
@@ -171,7 +171,7 @@ module "vault_workspace" {
 
   workspace_variables = {
     bootstrap_workspace_name = {
-      value = terraform.workspace
+      value    = terraform.workspace
       category = "terraform"
     }
   }
@@ -204,7 +204,7 @@ module "boundary_workspace" {
       category = "env"
     },
     bootstrap_workspace_name = {
-      value = terraform.workspace
+      value    = terraform.workspace
       category = "terraform"
     }
   }
@@ -233,7 +233,7 @@ module "tfc_agent_workspace" {
       category = "env"
     },
     bootstrap_workspace_name = {
-      value = terraform.workspace
+      value    = terraform.workspace
       category = "terraform"
     }
   }
@@ -303,17 +303,17 @@ module "hcp_credentials_variable_set" {
 
   variables = {
     HCP_CLIENT_ID = {
-      value     = "96rv2dRUKNBD4K1xTnLlHiruNFskG7C9"
+      value     = var.hcp_client_id
       category  = "env"
       sensitive = true
     },
     HCP_CLIENT_SECRET = {
-      value     = "GA690XPl1Gn5sA2KpGCDGLaLx4y9jX0kng459GlTnkGIjDtul56KDRmle3BtVAUy"
+      value     = var.hcp_client_secret
       category  = "env"
       sensitive = true
     },
     TFE_TOKEN = {
-      value     = "Sd0t8K3HFSzcdQ.atlasv1.sVPf2c0vsHeoPRBFunWBNlS83OLStU2qNiXiE0Ww4cfuiFxNLkhPLBoiC0BuQzrOAmI"
+      value     = var.tfe_token
       category  = "env"
       sensitive = true
     }
@@ -336,7 +336,7 @@ module "hcp_project_id_variable_set" {
 
   variables = {
     hcp_project_id = {
-      value    = "d9720027-8bb1-4542-98a3-744da821d0cf"
+      value    = var.hcp_project_id
       category = "terraform"
     }
   }

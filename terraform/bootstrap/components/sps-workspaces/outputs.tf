@@ -4,19 +4,19 @@
 output "workspaces" {
   value = {
     network = {
-      id = module.network_workspace.id
+      id   = module.network_workspace.id
       name = module.network_workspace.name
     },
     hcp_cloud = {
-      id = module.hcp_cloud_workspace.id
+      id   = module.hcp_cloud_workspace.id
       name = module.hcp_cloud_workspace.name
     },
     vault = {
-      id = module.vault_workspace.id
+      id   = module.vault_workspace.id
       name = module.vault_workspace.name
     },
     boundary = {
-      id = module.boundary_workspace.id
+      id   = module.boundary_workspace.id
       name = module.boundary_workspace.name
     }
   }

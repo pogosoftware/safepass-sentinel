@@ -7,6 +7,26 @@ variable "environment" {
   type        = string
 }
 
+variable "hcp_client_id" {
+  description = "The ID of HCP client"
+  type        = string
+}
+
+variable "hcp_client_secret" {
+  description = "The secret of HCP client"
+  type        = string
+}
+
+variable "tfe_token" {
+  description = "The token to HCP Cloud"
+  type        = string
+}
+
+variable "hcp_project_id" {
+  description = "The ID to HCP project"
+  type        = string
+}
+
 ####################################################################################################
 ### TFC
 ####################################################################################################
