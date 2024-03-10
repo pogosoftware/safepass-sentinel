@@ -49,6 +49,15 @@ resource "aws_iam_role" "ecs_task" {
 ########################################################################################################################
 ## SECURITY GROUP RULES
 ########################################################################################################################
+resource "aws_security_group_rule" "allow_22_egress" {
+  type              = "egress"
+  to_port           = 22
+  protocol          = "tcp"
+  from_port         = 22
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = local.ecs_cluster_sg_id
+}
+
 resource "aws_security_group_rule" "allow_443_egress" {
   type              = "egress"
   to_port           = 443
