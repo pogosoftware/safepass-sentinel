@@ -68,7 +68,7 @@ resource "aws_vpc_peering_connection_accepter" "peer" {
 }
 
 resource "aws_route" "private_to_hvn" {
-  for_each = local.private_route_table_ids
+  for_each = toset(local.private_route_table_ids)
 
   route_table_id            = each.key
   destination_cidr_block    = var.hcp_cloud_cidr_block
