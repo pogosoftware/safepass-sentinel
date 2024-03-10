@@ -66,16 +66,16 @@ resource "aws_instance" "ec2_egress_worker" {
     InstanceGroup = "EC2_Egress_Worker"
   }
 
-  # provisioner "remote-exec" {
-  #   connection {
-  #     type        = "ssh"
-  #     host        = self.private_ip
-  #     user        = "ubuntu"
-  #     private_key = tls_private_key.ec2_egress_worker.private_key_openssh
-  #   }
+  provisioner "remote-exec" {
+    connection {
+      type        = "ssh"
+      host        = self.private_ip
+      user        = "ubuntu"
+      private_key = tls_private_key.ec2_egress_worker.private_key_openssh
+    }
 
-  #   inline = ["cloud-init status --wait"]
-  # }
+    inline = ["cloud-init status --wait"]
+  }
 
   lifecycle {
     ignore_changes = [
