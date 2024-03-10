@@ -84,8 +84,8 @@ resource "aws_ecs_task_definition" "this" {
       {
         name : local.tfc_agent_name
         image : var.image
-        cpu : 512,
-        memory : 2048,
+        cpu : var.cpu_units,
+        memory : var.memory,
         essential : true,
         environment = [
           {

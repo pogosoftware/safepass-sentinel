@@ -52,6 +52,6 @@ variable "cpu_units" {
 
 variable "memory" {
   description = "Amount of memory in MB for a single ECS task"
-  default     = 1024
+  default     = 2048
   type        = number
 }
