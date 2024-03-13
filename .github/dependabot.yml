@@ -4,26 +4,32 @@ updates:
 # Terraform - One entry per thing we want to scan as per https://github.com/dependabot/dependabot-core/issues/649
   - package-ecosystem: "terraform"
     directory: "/terraform/boundary"
+    open-pull-requests-limit: 5
     schedule:
       interval: "daily"
   - package-ecosystem: "terraform"
     directory: "/terraform/hcp-cloud"
+    open-pull-requests-limit: 5
     schedule:
       interval: "daily"
   - package-ecosystem: "terraform"
     directory: "/terraform/network"
+    open-pull-requests-limit: 5
     schedule:
       interval: "daily"
   - package-ecosystem: "terraform"
     directory: "/terraform/tfc-agent"
+    open-pull-requests-limit: 5
     schedule:
       interval: "daily"
   - package-ecosystem: "terraform"
     directory: "/terraform/vault"
+    open-pull-requests-limit: 5
     schedule:
       interval: "daily"
   - package-ecosystem: "terraform"
     directory: "/terraform/vpn"
+    open-pull-requests-limit: 5
     schedule:
       interval: "daily"
 
