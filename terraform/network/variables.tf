@@ -1,7 +1,7 @@
 variable "aws_region" {
-  default = "eu-central-1"
+  default     = "eu-central-1"
   description = "The name of AWS region"
-  type = string
+  type        = string
 }
 
 variable "network_vpc_name" {

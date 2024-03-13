@@ -24,6 +24,5 @@ locals {
   ssh_credential_store   = format("vault-ssh-%s", var.environment)
   ssh_credential_library = format("vault-ssh-%s", var.environment)
 
-  aws_boundary_username  = format("boundary-%s", var.environment)
   ec2_egress_worker_name = format("%s-%s", var.boundary_ec2_workers_egress_name, var.environment)
 }

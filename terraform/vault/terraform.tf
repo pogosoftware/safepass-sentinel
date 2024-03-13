@@ -14,5 +14,9 @@ terraform {
       source  = "cloudposse/utils"
       version = "~> 1.18"
     }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
   }
 }

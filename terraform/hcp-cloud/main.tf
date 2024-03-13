@@ -79,8 +79,8 @@ resource "aws_route" "private_to_hvn" {
 ### VAULT - JWT AUTH ROLE FOR TFC
 ####################################################################################################
 resource "vault_namespace" "env" {
-  depends_on = [ aws_route.private_to_hvn ]
-  
+  depends_on = [aws_route.private_to_hvn]
+
   path = var.environment
 }
 
@@ -124,7 +124,7 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 }
 
 ####################################################################################################
-### CREATE VARABLE SETS WITH VAULT CREDENTIALS
+### CREATE VARIABLE SETS WITH VAULT CREDENTIALS
 ####################################################################################################
 module "vault_credentials_variable_set" {
   source  = "pogosoftware/tfe/tfe//modules/variable-set"

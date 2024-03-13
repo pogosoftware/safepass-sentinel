@@ -2,6 +2,7 @@
 ### WORKSPACES
 ####################################################################################################
 output "workspaces" {
+  description = "The id and name of existing TFC workspaces"
   value = {
     network = {
       id   = try(module.network_workspace.id, null)

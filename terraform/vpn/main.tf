@@ -14,7 +14,7 @@ resource "tls_self_signed_cert" "ca" {
     common_name = "Easy-RSA CA"
   }
 
-  validity_period_hours = 336 //  7 days
+  validity_period_hours = 336 # 7 days
 
   allowed_uses = [
     "cert_signing",
@@ -43,7 +43,7 @@ resource "tls_locally_signed_cert" "client" {
   ca_private_key_pem = tls_private_key.ca.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.ca.cert_pem
 
-  validity_period_hours = 336 //  7 days
+  validity_period_hours = 336 # 7 days
 
   allowed_uses = [
     "digital_signature",
@@ -74,7 +74,7 @@ resource "tls_locally_signed_cert" "server" {
   ca_private_key_pem = tls_private_key.ca.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.ca.cert_pem
 
-  validity_period_hours = 336 //  7 days
+  validity_period_hours = 336 # 7 days
 
   allowed_uses = [
     "digital_signature",

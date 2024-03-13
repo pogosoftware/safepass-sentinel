@@ -18,7 +18,7 @@ module "hcp_cloud_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
   version = "2.2.0"
 
-  create_iam_role = local.create_hcp_cloud_workspace
+  create_iam_role        = local.create_hcp_cloud_workspace
   name_preffix           = local.hcp_cloud_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.hcp_cloud_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.hcp_cloud_apply.json
@@ -31,7 +31,7 @@ module "boundary_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
   version = "2.2.0"
 
-  create_iam_role = local.create_boundary_workspace
+  create_iam_role        = local.create_boundary_workspace
   name_preffix           = local.boundary_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.boundary_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.boundary_apply.json
@@ -44,7 +44,7 @@ module "tfc_agent_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
   version = "2.2.0"
 
-  create_iam_role = local.create_tfc_agent_workspace
+  create_iam_role        = local.create_tfc_agent_workspace
   name_preffix           = local.tfc_agent_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.tfc_agent_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.tfc_agent_apply.json
