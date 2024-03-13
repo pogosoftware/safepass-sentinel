@@ -3,7 +3,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 data "tfe_project" "this" {
-  name         = local.tfe_project_name
+  name         = var.tfe_project_name
   organization = data.hcp_organization.this.name
 }
 
@@ -415,31 +415,3 @@ data "aws_iam_policy_document" "tfc_agent_apply" {
     ]
   }
 }
-
-# data "aws_iam_policy_document" "vpn_plan" {
-#   statement {
-#     effect = "Allow"
-#     actions = [
-#       "s3:ListAllMyBuckets"
-#     ]
-
-#     resources = [
-#       "arn:aws:s3:::*",
-#     ]
-#   }
-# }
-
-# data "aws_iam_policy_document" "vpn_apply" {
-#   statement {
-#     effect = "Allow"
-#     actions = [
-#       "s3:ListAllMyBuckets"
-#     ]
-
-#     resources = [
-#       "arn:aws:s3:::*",
-#     ]
-#   }
-# }
-
-

@@ -3,61 +3,53 @@
 ####################################################################################################
 module "network_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_iam_role        = local.create_network_workspace
   name_preffix           = local.network_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.network_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.network_apply.json
 
-  tfe_project   = local.tfe_project_name
+  tfe_project   = var.tfe_project_name
   tfe_workspace = local.network_workspace_name
 }
 
 module "hcp_cloud_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_iam_role = local.create_hcp_cloud_workspace
   name_preffix           = local.hcp_cloud_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.hcp_cloud_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.hcp_cloud_apply.json
 
-  tfe_project   = local.tfe_project_name
+  tfe_project   = var.tfe_project_name
   tfe_workspace = local.hcp_cloud_workspace_name
 }
 
-# module "vpn_role" {
-#   source  = "pogosoftware/tfe/tfe//modules/iam-role"
-#   version = "1.1.1"
-
-#   name_preffix           = local.vpn_workspace_name
-#   plan_role_policy_json  = data.aws_iam_policy_document.vpn_plan.json
-#   apply_role_policy_json = data.aws_iam_policy_document.vpn_apply.json
-
-#   tfe_project   = local.tfe_project_name
-#   tfe_workspace = local.vpn_workspace_name
-# }
-
 module "boundary_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_iam_role = local.create_boundary_workspace
   name_preffix           = local.boundary_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.boundary_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.boundary_apply.json
 
-  tfe_project   = local.tfe_project_name
+  tfe_project   = var.tfe_project_name
   tfe_workspace = local.boundary_workspace_name
 }
 
 module "tfc_agent_role" {
   source  = "pogosoftware/tfe/tfe//modules/iam-role"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_iam_role = local.create_tfc_agent_workspace
   name_preffix           = local.tfc_agent_workspace_name
   plan_role_policy_json  = data.aws_iam_policy_document.tfc_agent_plan.json
   apply_role_policy_json = data.aws_iam_policy_document.tfc_agent_apply.json
 
-  tfe_project   = local.tfe_project_name
+  tfe_project   = var.tfe_project_name
   tfe_workspace = local.tfc_agent_workspace_name
 }
 
@@ -93,14 +85,15 @@ module "boundary_user" {
 ####################################################################################################
 module "network_workspace" {
   source  = "pogosoftware/tfe/tfe//modules/workspace"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_workspace   = local.create_network_workspace
+  name               = local.network_workspace_name
   project_id         = data.tfe_project.this.id
-  workspace          = local.network_workspace_name
   working_directory  = "./terraform/network"
   trigger_patterns   = ["./terraform/network/*.tf"]
   vcs_repos          = var.vcs_repo
-  tag_names          = ["sps", "aws", var.environment]
+  tags               = ["aws", var.environment]
   allow_destroy_plan = var.allow_destroy_plan
   auto_apply         = var.auto_apply
 
@@ -115,23 +108,24 @@ module "network_workspace" {
     }
   }
 
-  remote_state_consumer_ids = [
-    module.hcp_cloud_workspace.id,
-    module.boundary_workspace.id,
-    module.tfc_agent_workspace.id
+  share_state_with_workspace_ids = [
+    local.create_hcp_cloud_workspace ? module.hcp_cloud_workspace.id : null,
+    local.create_boundary_workspace ? module.boundary_workspace.id : null,
+    local.create_tfc_agent_workspace ? module.tfc_agent_workspace.id : null
   ]
 }
 
 module "hcp_cloud_workspace" {
   source  = "pogosoftware/tfe/tfe//modules/workspace"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_workspace   = local.create_hcp_cloud_workspace
+  name               = local.hcp_cloud_workspace_name
   project_id         = data.tfe_project.this.id
-  workspace          = local.hcp_cloud_workspace_name
   working_directory  = "./terraform/hcp-cloud"
   trigger_patterns   = ["./terraform/hcp-cloud/*.tf"]
   vcs_repos          = var.vcs_repo
-  tag_names          = ["sps", "hcp", var.environment]
+  tags               = ["aws", "hcp", "random", "vault", "tfe", var.environment]
   allow_destroy_plan = var.allow_destroy_plan
   auto_apply         = var.auto_apply
 
@@ -150,22 +144,23 @@ module "hcp_cloud_workspace" {
     }
   }
 
-  remote_state_consumer_ids = [
-    module.vault_workspace.id,
-    module.boundary_workspace.id
+  share_state_with_workspace_ids = [
+    local.create_vault_workspace ? module.vault_workspace.id : null,
+    local.create_boundary_workspace ? module.boundary_workspace.id : null
   ]
 }
 
 module "vault_workspace" {
   source  = "pogosoftware/tfe/tfe//modules/workspace"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_workspace   = local.create_vault_workspace
+  name               = local.vault_workspace_name
   project_id         = data.tfe_project.this.id
-  workspace          = local.vault_workspace_name
   working_directory  = "./terraform/vault"
   trigger_patterns   = ["./terraform/vault/*.tf"]
   vcs_repos          = var.vcs_repo
-  tag_names          = ["sps", "hcp", var.environment]
+  tags               = ["hcp", "vault", "utils", var.environment]
   allow_destroy_plan = var.allow_destroy_plan
   auto_apply         = var.auto_apply
 
@@ -176,21 +171,22 @@ module "vault_workspace" {
     }
   }
 
-  remote_state_consumer_ids = [
-    module.boundary_workspace.id
+  share_state_with_workspace_ids = [
+    module.boundary_workspace != null ? module.boundary_workspace.id : null
   ]
 }
 
 module "boundary_workspace" {
   source  = "pogosoftware/tfe/tfe//modules/workspace"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_workspace   = local.create_boundary_workspace
+  name               = local.boundary_workspace_name
   project_id         = data.tfe_project.this.id
-  workspace          = local.boundary_workspace_name
   working_directory  = "./terraform/boundary"
   trigger_patterns   = ["./terraform/boundary/*.tf"]
   vcs_repos          = var.vcs_repo
-  tag_names          = ["sps", "hcp", var.environment]
+  tags               = ["aws", "boundary", "hcp", "tls", "vault", var.environment]
   allow_destroy_plan = var.allow_destroy_plan
   auto_apply         = var.auto_apply
 
@@ -212,14 +208,15 @@ module "boundary_workspace" {
 
 module "tfc_agent_workspace" {
   source  = "pogosoftware/tfe/tfe//modules/workspace"
-  version = "1.3.0"
+  version = "2.2.0"
 
+  create_workspace   = local.create_tfc_agent_workspace
+  name               = local.tfc_agent_workspace_name
   project_id         = data.tfe_project.this.id
-  workspace          = local.tfc_agent_workspace_name
   working_directory  = "./terraform/tfc-agent"
   trigger_patterns   = ["./terraform/tfc-agent/*.tf"]
   vcs_repos          = var.vcs_repo
-  tag_names          = ["sps", "aws", var.environment]
+  tags               = ["sps", "aws", var.environment]
   allow_destroy_plan = var.allow_destroy_plan
   auto_apply         = var.auto_apply
 
@@ -238,35 +235,13 @@ module "tfc_agent_workspace" {
     }
   }
 }
-# module "vpn_workspace" {
-#   source  = "pogosoftware/tfe/tfe//modules/workspace"
-#   version = "1.1.1"
-
-#   project_id        = data.tfe_project.this.id
-#   workspace         = local.vpn_workspace_name
-#   working_directory = "./terraform/vpn"
-#   trigger_patterns  = ["./terraform/vpn/*.tf"]
-#   vcs_repos         = var.vcs_repo
-#   tag_names         = ["aws", var.environment]
-
-#   aws_provider_auth  = true
-#   aws_plan_role_arn  = module.vpn_role.plan_role_arn
-#   aws_apply_role_arn = module.vpn_role.apply_role_arn
-
-#   workspace_variables = {
-#     network_workspace_name = {
-#       value = local.network_workspace_name
-#       category = "terraform"
-#     }
-#   }
-# }
 
 ####################################################################################################
 ### TFE VARIABLE SETS
 ####################################################################################################
 module "aws_credentials_variable_set" {
   source  = "pogosoftware/tfe/tfe//modules/variable-set"
-  version = "1.3.0"
+  version = "2.2.0"
 
   name        = format("%s - %s - AWS Credentials", var.tfe_project_name, var.environment)
   description = "Credentials to AWS"
@@ -287,16 +262,16 @@ module "aws_credentials_variable_set" {
   }
 
   workspace_ids = [
-    module.network_workspace.id,
-    module.hcp_cloud_workspace.id,
-    module.boundary_workspace.id,
-    module.tfc_agent_workspace.id
+    local.create_network_workspace ? module.network_workspace.id : null,
+    local.create_hcp_cloud_workspace ? module.hcp_cloud_workspace.id : null,
+    local.create_boundary_workspace ? module.boundary_workspace.id : null,
+    local.create_tfc_agent_workspace ? module.tfc_agent_workspace.id : null
   ]
 }
 
 module "hcp_credentials_variable_set" {
   source  = "pogosoftware/tfe/tfe//modules/variable-set"
-  version = "1.3.0"
+  version = "2.2.0"
 
   name        = format("%s - %s - HCP Credentials", var.tfe_project_name, var.environment)
   description = "Credentials to HCP Cloud"
@@ -320,16 +295,16 @@ module "hcp_credentials_variable_set" {
   }
 
   workspace_ids = [
-    module.hcp_cloud_workspace.id,
-    module.vault_workspace.id,
-    module.boundary_workspace.id,
-    module.tfc_agent_workspace.id
+    local.create_hcp_cloud_workspace ? module.hcp_cloud_workspace.id : null,
+    local.create_vault_workspace ? module.vault_workspace.id : null,
+    local.create_boundary_workspace ? module.boundary_workspace.id : null,
+    local.create_tfc_agent_workspace ? module.tfc_agent_workspace.id : null
   ]
 }
 
 module "hcp_project_id_variable_set" {
   source  = "pogosoftware/tfe/tfe//modules/variable-set"
-  version = "1.3.0"
+  version = "2.2.0"
 
   name        = format("%s - %s - HCP Project ID", var.tfe_project_name, var.environment)
   description = "ID of HCP Cloud project"
@@ -342,9 +317,9 @@ module "hcp_project_id_variable_set" {
   }
 
   workspace_ids = [
-    module.hcp_cloud_workspace.id,
-    module.vault_workspace.id,
-    module.boundary_workspace.id,
-    module.tfc_agent_workspace.id
+    local.create_hcp_cloud_workspace ? module.hcp_cloud_workspace.id : null,
+    local.create_vault_workspace ? module.vault_workspace.id : null,
+    local.create_boundary_workspace ? module.boundary_workspace.id : null,
+    local.create_tfc_agent_workspace ? module.tfc_agent_workspace.id : null
   ]
 }

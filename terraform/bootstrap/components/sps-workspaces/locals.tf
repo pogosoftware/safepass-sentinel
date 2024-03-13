@@ -1,10 +1,18 @@
 locals {
-  tfe_project_name = var.tfe_project_name
+  name_prefix = var.name_prefix == null || var.name_prefix == "" ? "" : format("%s-", var.name_prefix)
 
-  network_workspace_name   = format("sps-network-%s", var.environment)
-  hcp_cloud_workspace_name = format("sps-hcp-cloud-%s", var.environment)
-  vault_workspace_name     = format("sps-vault-%s", var.environment)
-  boundary_workspace_name  = format("sps-boundary-%s", var.environment)
-  vpn_workspace_name       = format("sps-vpn-%s", var.environment)
-  tfc_agent_workspace_name = format("sps-tfc-agent-%s", var.environment)
+  create_network_workspace = contains(["dev"], var.environment)
+  network_workspace_name   = format("%snetwork-%s", local.name_prefix, var.environment)
+
+  create_hcp_cloud_workspace = contains(["dev"], var.environment)
+  hcp_cloud_workspace_name   = format("%shcp-cloud-%s", local.name_prefix, var.environment)
+
+  create_vault_workspace = contains(["dev"], var.environment)
+  vault_workspace_name   = format("%svault-%s", local.name_prefix, var.environment)
+
+  create_boundary_workspace = contains(["dev"], var.environment)
+  boundary_workspace_name   = format("%sboundary-%s", local.name_prefix, var.environment)
+
+  create_tfc_agent_workspace = contains(["dev"], var.environment)
+  tfc_agent_workspace_name   = format("%stfc-agent-%s", local.name_prefix, var.environment)
 }

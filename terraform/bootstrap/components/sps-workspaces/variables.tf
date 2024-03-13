@@ -7,6 +7,12 @@ variable "environment" {
   type        = string
 }
 
+variable "name_prefix" {
+  default     = "sps"
+  description = "The prefix of names. Defaults to `sps`"
+  type        = string
+}
+
 variable "hcp_client_id" {
   description = "The ID of HCP client"
   type        = string
