@@ -9,10 +9,10 @@ resource "hcp_hvn" "this" {
 }
 
 resource "hcp_vault_cluster" "this" {
-  cluster_id      = local.hcp_cloud_vault_cluster_id
+  cluster_id      = local.vault_cluster_id
   hvn_id          = hcp_hvn.this.hvn_id
-  public_endpoint = var.hcp_cloud_vault_public_endpoint
-  tier            = var.hcp_cloud_vault_tier
+  public_endpoint = var.vault_public_endpoint
+  tier            = var.vault_tier
 }
 
 resource "hcp_vault_cluster_admin_token" "this" {
@@ -35,10 +35,10 @@ resource "random_password" "boundary_password" {
 }
 
 resource "hcp_boundary_cluster" "this" {
-  cluster_id = local.hcp_cloud_boundary_cluster_id
+  cluster_id = local.boundary_cluster_id
   username   = local.boundary_username
   password   = local.boundary_password
-  tier       = var.hcp_cloud_boundary_tier
+  tier       = var.boundary_tier
 }
 
 ####################################################################################################
@@ -67,10 +67,20 @@ resource "aws_vpc_peering_connection_accepter" "peer" {
   }
 }
 
+resource "aws_route" "private_to_hvn" {
+  for_each = toset(local.private_route_table_ids)
+
+  route_table_id            = each.key
+  destination_cidr_block    = var.hcp_cloud_cidr_block
+  vpc_peering_connection_id = aws_vpc_peering_connection_accepter.peer.vpc_peering_connection_id
+}
+
 ####################################################################################################
 ### VAULT - JWT AUTH ROLE FOR TFC
 ####################################################################################################
 resource "vault_namespace" "env" {
+  depends_on = [ aws_route.private_to_hvn ]
+  
   path = var.environment
 }
 
@@ -88,20 +98,20 @@ resource "vault_jwt_auth_backend" "jwt" {
 }
 
 resource "vault_policy" "workspaces" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_jwt_roles
 
-  name      = each.key
+  name      = each.value.name
   namespace = vault_namespace.devops.path_fq
   policy    = file("templates/${each.key}-policy.hcl")
 }
 
 resource "vault_jwt_auth_backend_role" "workspaces" {
-  for_each = local.hcp_vault_variable_set_workspaces
+  for_each = local.vault_jwt_roles
 
   namespace      = vault_namespace.devops.path_fq
   backend        = vault_jwt_auth_backend.jwt.path
-  role_name      = each.key
-  token_policies = ["default", each.key]
+  role_name      = each.value.name
+  token_policies = ["default", each.value.name]
 
   bound_audiences   = ["vault.workload.identity"]
   bound_claims_type = "glob"
@@ -116,49 +126,36 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 ####################################################################################################
 ### CREATE VARABLE SETS WITH VAULT CREDENTIALS
 ####################################################################################################
-resource "tfe_variable_set" "vault" {
-  for_each = local.hcp_vault_variable_set_workspaces
+module "vault_credentials_variable_set" {
+  source  = "pogosoftware/tfe/tfe//modules/variable-set"
+  version = "1.3.0"
 
-  name         = format("SafaPass Sentinel - %s - Vault (%s) Credentials", var.environment, each.value)
-  description  = "This resource is manage by Terraform"
-  organization = data.hcp_organization.this.name
-  workspace_ids = [
-    data.tfe_workspace_ids.workspaces.ids[each.value]
-  ]
+  name        = format("SafaPass Sentinel - %s - Vault Credentials", var.environment)
+  description = "This resource is manage by Terraform"
+
+  variables = {
+    TFC_VAULT_PROVIDER_AUTH = {
+      value    = true
+      category = "env"
+    },
+    TFC_VAULT_ADDR = {
+      value    = hcp_vault_cluster.this.vault_private_endpoint_url
+      category = "env"
+    },
+    TFC_VAULT_NAMESPACE = {
+      value    = format("admin/%s", vault_namespace.devops.path_fq)
+      category = "env"
+    }
+  }
+
+  workspace_ids = [for x in local.vault_jwt_roles : x.id]
 }
 
-resource "tfe_variable" "tfc_vault_provider_auth" {
-  for_each = local.hcp_vault_variable_set_workspaces
+resource "tfe_variable" "tfe_vault_run_role_workspace_variable" {
+  for_each = { for x in local.vault_jwt_roles : x.name => x.id }
 
-  key             = "TFC_VAULT_PROVIDER_AUTH"
-  value           = "true"
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "tfc_vault_addr" {
-  for_each = local.hcp_vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_ADDR"
-  value           = hcp_vault_cluster.this.vault_public_endpoint_url
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "tfc_vault_namespace" {
-  for_each = local.hcp_vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_NAMESPACE"
-  value           = format("admin/%s", vault_namespace.devops.path_fq)
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
-}
-
-resource "tfe_variable" "tfc_vault_run_role" {
-  for_each = local.hcp_vault_variable_set_workspaces
-
-  key             = "TFC_VAULT_RUN_ROLE"
-  value           = each.key
-  category        = "env"
-  variable_set_id = tfe_variable_set.vault[each.key].id
+  key          = "TFC_VAULT_RUN_ROLE"
+  value        = each.key
+  category     = "env"
+  workspace_id = each.value
 }

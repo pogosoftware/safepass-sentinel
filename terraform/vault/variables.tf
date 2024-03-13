@@ -7,17 +7,16 @@ variable "environment" {
   type        = string
 }
 
+variable "bootstrap_workspace_name" {
+  description = "The name of bootstrap workspace"
+  type        = string
+}
+
 ####################################################################################################
 ### HCP
 ####################################################################################################
 variable "hcp_project_id" {
   description = "The UUID of HCP project"
-  type        = string
-}
-
-variable "hcp_cloud_workspace_name" {
-  default     = "hcp-cloud-euc1"
-  description = "The name of hcp cloud workspace"
   type        = string
 }
 

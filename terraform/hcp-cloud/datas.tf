@@ -1,12 +1,18 @@
 data "hcp_organization" "this" {}
 
-data "tfe_workspace_ids" "workspaces" {
-  names        = values(local.hcp_vault_variable_set_workspaces)
-  organization = data.hcp_organization.this.name
-}
-
 data "hcp_project" "this" {
   project = var.hcp_project_id
+}
+
+data "terraform_remote_state" "bootstrap" {
+  backend = "remote"
+
+  config = {
+    organization = data.hcp_organization.this.name
+    workspaces = {
+      name = var.bootstrap_workspace_name
+    }
+  }
 }
 
 data "terraform_remote_state" "network" {
@@ -15,7 +21,7 @@ data "terraform_remote_state" "network" {
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.hcp_network_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["network"].name
     }
   }
 }

@@ -1,5 +1,5 @@
 terraform {
-  required_version = "~> 1.7.0"
+  required_version = "~>1.7.0"
 
   required_providers {
     aws = {
@@ -13,6 +13,15 @@ terraform {
     tfe = {
       source  = "hashicorp/tfe"
       version = "~> 0.52"
+    }
+
+  }
+
+  cloud {
+    organization = "pogosoftware"
+
+    workspaces {
+      name = "sps-bootstrap-dev"
     }
   }
 }

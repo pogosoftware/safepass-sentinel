@@ -3,35 +3,46 @@ data "hcp_organization" "this" {}
 ####################################################################################################
 ### REMOTE STATES
 ####################################################################################################
+data "terraform_remote_state" "bootstrap" {
+  backend = "remote"
+
+  config = {
+    organization = data.hcp_organization.this.name
+    workspaces = {
+      name = var.bootstrap_workspace_name
+    }
+  }
+}
+
 data "terraform_remote_state" "hcp_cloud" {
   backend = "remote"
 
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.hcp_cloud_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["hcp_cloud"].name
     }
   }
 }
 
-data "terraform_remote_state" "hcp_vault" {
+data "terraform_remote_state" "vault" {
   backend = "remote"
 
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.hcp_vault_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["vault"].name
     }
   }
 }
 
-data "terraform_remote_state" "hcp_network" {
+data "terraform_remote_state" "network" {
   backend = "remote"
 
   config = {
     organization = data.hcp_organization.this.name
     workspaces = {
-      name = local.hcp_network_workspace_name
+      name = data.terraform_remote_state.bootstrap.outputs.workspaces["network"].name
     }
   }
 }
@@ -61,17 +72,4 @@ data "aws_ami" "ubuntu" {
   }
 
   owners = ["099720109477"] # Canonical
-}
-
-####################################################################################################
-### IAM POLICIES
-####################################################################################################
-data "aws_iam_policy_document" "boudary_describe_instances" {
-  statement {
-    effect = "Allow"
-    actions = [
-      "ec2:DescribeInstances"
-    ]
-    resources = ["*"]
-  }
 }
