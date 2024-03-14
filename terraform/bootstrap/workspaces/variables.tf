@@ -3,7 +3,7 @@
 ####################################################################################################
 variable "environment" {
   default     = "dev"
-  description = "The name of environment. Allwed values: `dev`, `stg`, `prd`. Defaults to `dev`"
+  description = "The name of environment. Allowed values: `dev`, `stg`, `prd`. Defaults to `dev`"
   type        = string
 }
 
@@ -39,6 +39,7 @@ variable "hcp_project_id" {
 variable "tfe_project_name" {
   default     = "SafePass_Sentinel"
   description = "The name of the TFC project"
+  type        = string
 }
 
 variable "vcs_repo" {

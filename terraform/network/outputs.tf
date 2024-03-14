@@ -24,7 +24,8 @@ output "public_subnet_ids" {
 }
 
 output "security_group_ids" {
-  value = { for sg_name, sg in aws_security_group.this : sg_name => sg.id }
+  description = "The IDs of security groups"
+  value       = { for sg_name, sg in aws_security_group.this : sg_name => sg.id }
 }
 
 output "public_route_table_ids" {

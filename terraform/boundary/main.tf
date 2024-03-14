@@ -139,7 +139,7 @@ resource "boundary_account_password" "admin" {
   auth_method_id = boundary_auth_method.password.id
   name           = "Pogosoftware Admins"
   login_name     = "admin"
-  password       = "$uper$ecure"
+  password       = "$upper$ecure"
 }
 
 resource "boundary_user" "admin" {
@@ -180,7 +180,7 @@ resource "boundary_host_catalog_plugin" "ec2_egress_workers" {
 }
 
 resource "boundary_host_set_plugin" "ec2_egress_workers" {
-  name                  = "boudary egress workers"
+  name                  = "boundary egress workers"
   host_catalog_id       = boundary_host_catalog_plugin.ec2_egress_workers.id
   attributes_json       = jsonencode({ "filters" = ["tag:InstanceGroup=EC2_Egress_Worker"] })
   sync_interval_seconds = var.sync_interval_seconds

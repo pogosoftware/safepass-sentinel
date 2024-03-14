@@ -1,12 +1,6 @@
 ####################################################################################################
 ### GLOBAL
 ####################################################################################################
-variable "environment" {
-  default     = "dev"
-  description = "The Name of environment. Possible values are: `dev`, `stg`, `prd`"
-  type        = string
-}
-
 variable "bootstrap_workspace_name" {
   description = "The name of bootstrap workspace"
   type        = string

@@ -1,7 +1,7 @@
-"L: terraform":
+terraform:
 - changed-files:
   - any-glob-to-any-file: terraform/**
 
-"L: docs":
+docs:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'

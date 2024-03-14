@@ -95,8 +95,8 @@ resource "aws_ecs_task_definition" "this" {
   requires_compatibilities = ["FARGATE"]
   network_mode             = "awsvpc"
   execution_role_arn       = aws_iam_role.tfc_agents.arn
-  cpu    = var.cpu_units
-  memory = var.memory
+  cpu                      = var.cpu_units
+  memory                   = var.memory
   container_definitions = jsonencode(
     [
       {
@@ -177,5 +177,5 @@ resource "tfe_workspace_settings" "agents" {
 
   workspace_id   = each.value
   execution_mode = "agent"
-  agent_pool_id = tfe_agent_pool.this.id
+  agent_pool_id  = tfe_agent_pool.this.id
 }

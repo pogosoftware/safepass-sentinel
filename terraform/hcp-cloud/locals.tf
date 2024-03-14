@@ -1,6 +1,4 @@
 locals {
-  bootstrap_workspace_name = format("sps-bootstrap-%s", var.environment)
-
   vault_jwt_roles = {
     vault    = data.terraform_remote_state.bootstrap.outputs.workspaces["vault"]
     boundary = data.terraform_remote_state.bootstrap.outputs.workspaces["boundary"]
