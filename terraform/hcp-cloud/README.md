@@ -8,7 +8,7 @@
 | hcp | ~> 0.83 |
 | random | ~> 3.6 |
 | tfe | ~> 0.52 |
-| vault | ~> 3.25 |
+| vault | ~> 4.0 |
 
 ## Providers
 
@@ -19,7 +19,7 @@
 | random | ~> 3.6 |
 | terraform | n/a |
 | tfe | ~> 0.52 |
-| vault | ~> 3.25 |
+| vault | ~> 4.0 |
 
 ## Inputs
 
