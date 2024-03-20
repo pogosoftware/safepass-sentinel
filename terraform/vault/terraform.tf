@@ -8,7 +8,7 @@ terraform {
     }
     vault = {
       source  = "hashicorp/vault"
-      version = "~> 3.25"
+      version = "~> 4.0"
     }
     utils = {
       source  = "cloudposse/utils"
