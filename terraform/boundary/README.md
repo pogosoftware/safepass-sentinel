@@ -8,7 +8,7 @@
 | boundary | ~> 1.1 |
 | hcp | ~> 0.83 |
 | tls | ~> 4.0 |
-| vault | ~> 3.25 |
+| vault | ~> 4.0 |
 
 ## Providers
 
@@ -19,7 +19,7 @@
 | hcp | ~> 0.83 |
 | terraform | n/a |
 | tls | ~> 4.0 |
-| vault | ~> 3.25 |
+| vault | ~> 4.0 |
 
 ## Inputs
 
