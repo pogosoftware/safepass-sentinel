@@ -2,6 +2,6 @@ terraform:
 - changed-files:
   - any-glob-to-any-file: terraform/**
 
-docs:
+documentation:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'
