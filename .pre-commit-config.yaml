@@ -2,16 +2,16 @@ repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.88.2
     hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+        args:
+          - --hook-config=--retry-once-with-cleanup=true
       - id: terraform_providers_lock
         args:
           - --args=-platform=linux_arm64
           - --args=-platform=linux_amd64
           - --args=-platform=darwin_amd64
           - --args=-platform=windows_amd64
-      - id: terraform_fmt
-      - id: terraform_validate
-        args:
-          - --tf-init-args=-lockfile=readonly
       - id: terraform_tflint
         args:
           - '--args=--only=terraform_deprecated_interpolation'
