@@ -7,7 +7,7 @@
 | hcp | ~> 0.83 |
 | tls | ~> 4.0 |
 | utils | ~> 1.18 |
-| vault | ~> 3.25 |
+| vault | ~> 4.0 |
 
 ## Providers
 
@@ -16,7 +16,7 @@
 | hcp | ~> 0.83 |
 | terraform | n/a |
 | tls | ~> 4.0 |
-| vault | ~> 3.25 |
+| vault | ~> 4.0 |
 
 ## Inputs
 
