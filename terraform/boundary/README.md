@@ -3,7 +3,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.7.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.6.0 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.39 |
 | <a name="requirement_boundary"></a> [boundary](#requirement\_boundary) | ~> 1.1 |
 | <a name="requirement_hcp"></a> [hcp](#requirement\_hcp) | ~> 0.83 |

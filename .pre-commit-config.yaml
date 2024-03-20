@@ -10,7 +10,6 @@ repos:
           - --args=-platform=windows_amd64
       - id: terraform_fmt
       - id: terraform_validate
-      - id: terraform_docs
         args:
           - '--args=--lockfile=false'
       - id: terraform_tflint
