@@ -5,3 +5,13 @@ terraform:
 documentation:
 - changed-files:
   - any-glob-to-any-file: '**/*.md'
+
+ci:
+- changed-files:
+  - any-glob-to-any-file: '.github/**'
+
+feature:
+ - head-branch: ['^feature', 'feature']
+
+release:
+ - base-branch: 'main'
