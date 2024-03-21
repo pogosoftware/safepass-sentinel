@@ -45,7 +45,7 @@ variable "tfe_project_name" {
 variable "vcs_repo" {
   default = {
     identifier = "pogosoftware/safepass-sentinel"
-    branch     = "feature/bootstrap"
+    branch     = "develop"
   }
   description = "The repository where modules are"
   type = object({

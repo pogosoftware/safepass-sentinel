@@ -32,7 +32,7 @@
 | name\_prefix | The prefix of names. Defaults to `sps` | `string` | `"sps"` | no |
 | tfe\_project\_name | The name of the TFC project | `string` | `"SafePass_Sentinel"` | no |
 | tfe\_token | The token to HCP Cloud | `string` | n/a | yes |
-| vcs\_repo | The repository where modules are | <pre>object({<br>    identifier = string<br>    branch     = string<br>  })</pre> | <pre>{<br>  "branch": "feature/bootstrap",<br>  "identifier": "pogosoftware/safepass-sentinel"<br>}</pre> | no |
+| vcs\_repo | The repository where modules are | <pre>object({<br>    identifier = string<br>    branch     = string<br>  })</pre> | <pre>{<br>  "branch": "develop",<br>  "identifier": "pogosoftware/safepass-sentinel"<br>}</pre> | no |
 
 ## Outputs
 
