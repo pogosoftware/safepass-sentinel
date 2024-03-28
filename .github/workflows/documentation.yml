@@ -5,6 +5,10 @@ on:
     branches:
       - develop
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -14,7 +18,7 @@ jobs:
       with:
         ref: ${{ github.event.pull_request.head.ref }}
 
-    - name: Render terraform docs inside the USAGE.md and push changes back to PR branch
+    - name: Render terraform docs inside the README.md and push changes back to PR branch
       uses: Dirrk/terraform-docs@v1.0.8
       with:
         tf_docs_find_dir: terraform/
