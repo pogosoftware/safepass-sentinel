@@ -3,6 +3,6 @@ provider "hcp" {
 }
 
 provider "vault" {
-  address          = "http://localhost:8200"
+  address          = local.vault_private_endpoint_url
   skip_child_token = true
 }
