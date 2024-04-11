@@ -1,0 +1,16 @@
+name: Slack Notifications
+
+on:
+  pull_request:
+    branches:
+      - 'dependabot/**'
+
+jobs:
+  dependabot:
+    run-on: ubuntu-20.04
+    steps:
+      - uses: archive/github-actions-slack@v2.9.0
+        with:
+          slack-bot-user-oauth-access-token: ${{ secrets.SLACK_DEPENDABOT_TOKEN }}
+          slack-channel: dependabot
+          slack-text: New Dependabot PR: ${{ github.event.pull_request.html_url }}
