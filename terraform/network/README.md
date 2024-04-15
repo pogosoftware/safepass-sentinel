@@ -4,13 +4,13 @@
 | Name | Version |
 |------|---------|
 | terraform | ~> 1.7.0 |
-| aws | 5.31.0 |
+| aws | 5.45.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| aws | 5.31.0 |
+| aws | 5.45.0 |
 
 ## Inputs
 
