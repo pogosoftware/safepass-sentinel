@@ -3,13 +3,12 @@ name: Slack Notifications
 on:
   pull_request:
     types:
-      - opened
-    branches:
-      - 'dependabot/**'
+      - labeled
 
 jobs:
   dependabot:
     runs-on: ubuntu-latest
+    if: ${{ github.event.label.name == 'dependencies' }}
     steps:
       - uses: archive/github-actions-slack@v2.9.0
         with:
