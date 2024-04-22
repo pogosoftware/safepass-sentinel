@@ -2,6 +2,8 @@ name: Slack Notifications
 
 on:
   pull_request:
+    types:
+      - opened
     branches:
       - 'dependabot/**'
 
