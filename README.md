@@ -22,4 +22,4 @@ https://developer.hashicorp.com/boundary/tutorials/hcp-administration/hcp-manage
 https://medium.com/@snapsheetclaims/dependabot-slack-integration-4c50d0907836
 
 ## Issues
-* https://github.com/hashicorp/vault/issues/1597#issuecomment-231126210
+* https://github.com/hashicorp/vault/issues/1597#issuecomment-231126210 
