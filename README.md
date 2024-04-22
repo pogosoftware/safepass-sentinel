@@ -19,7 +19,7 @@ https://developer.hashicorp.com/boundary/docs/concepts/filtering/worker-tags#wor
 https://developer.hashicorp.com/boundary/tutorials/hcp-administration/hcp-manage-scopes
 
 # Slack notofications
-https://medium.com/@snapsheetclaims/dependabot-slack-integration-4c50d0907836
+https://medium.com/@snapsheetclaims/dependabot-slack-integration-4c50d0907836 
 
 ## Issues
-* https://github.com/hashicorp/vault/issues/1597#issuecomment-231126210
+* https://github.com/hashicorp/vault/issues/1597#issuecomment-231126210 
