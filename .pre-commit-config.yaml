@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
-    rev: v1.88.2
+    rev: v1.91.0
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
@@ -38,12 +38,12 @@ repos:
           - "{extends: relaxed, rules: {line-length: {max: 90}}}"
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-merge-conflict
       - id: end-of-file-fixer
 
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.3.0
     hooks:
       - id: codespell
