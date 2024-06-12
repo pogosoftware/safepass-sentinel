@@ -10,6 +10,8 @@ updates:
     commit-message:
       # Prefix all commit messages with "feat: "
       prefix: "feat: Terraform "
+    reviewers:
+      - "@pogosoftware/devops"
   - package-ecosystem: "terraform"
     directory: "/terraform/hcp-cloud"
     open-pull-requests-limit: 5
@@ -18,6 +20,8 @@ updates:
     commit-message:
       # Prefix all commit messages with "feat: "
       prefix: "feat: Terraform "
+    reviewers:
+      - "@pogosoftware/devops"
   - package-ecosystem: "terraform"
     directory: "/terraform/network"
     open-pull-requests-limit: 5
@@ -26,6 +30,8 @@ updates:
     commit-message:
       # Prefix all commit messages with "feat: "
       prefix: "feat: Terraform "
+    reviewers:
+      - "@pogosoftware/devops"
   - package-ecosystem: "terraform"
     directory: "/terraform/tfc-agent"
     open-pull-requests-limit: 5
@@ -34,6 +40,8 @@ updates:
     commit-message:
       # Prefix all commit messages with "feat: "
       prefix: "feat: Terraform "
+    reviewers:
+      - "@pogosoftware/devops"
   - package-ecosystem: "terraform"
     directory: "/terraform/vault"
     open-pull-requests-limit: 5
@@ -42,6 +50,8 @@ updates:
     commit-message:
       # Prefix all commit messages with "feat: "
       prefix: "feat: Terraform "
+    reviewers:
+      - "@pogosoftware/devops"
   - package-ecosystem: "terraform"
     directory: "/terraform/vpn"
     open-pull-requests-limit: 5
@@ -50,3 +60,5 @@ updates:
     commit-message:
       # Prefix all commit messages with "feat: "
       prefix: "feat: Terraform "
+    reviewers:
+      - "@pogosoftware/devops"
