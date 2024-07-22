@@ -128,7 +128,7 @@ resource "vault_jwt_auth_backend_role" "workspaces" {
 ####################################################################################################
 module "vault_credentials_variable_set" {
   source  = "pogosoftware/tfe/tfe//modules/variable-set"
-  version = "1.3.0"
+  version = "3.0.2"
 
   name        = format("SafaPass Sentinel - %s - Vault Credentials", var.environment)
   description = "This resource is manage by Terraform"
