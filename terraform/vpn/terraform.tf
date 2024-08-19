@@ -8,7 +8,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "5.53.0"
+      version = "5.63.0"
     }
     hcp = {
       source  = "hashicorp/hcp"
