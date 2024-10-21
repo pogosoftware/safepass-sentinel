@@ -6,7 +6,7 @@
 | terraform | ~> 1.7 |
 | aws | 5.66.0 |
 | hcp | ~> 0.83 |
-| tls | 4.0.5 |
+| tls | 4.0.6 |
 
 ## Providers
 
@@ -15,7 +15,7 @@
 | aws | 5.66.0 |
 | hcp | ~> 0.83 |
 | terraform | n/a |
-| tls | 4.0.5 |
+| tls | 4.0.6 |
 
 ## Inputs
 
