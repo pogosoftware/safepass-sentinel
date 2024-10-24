@@ -1,5 +1,5 @@
 component "network" {
-  source = "./network"
+  source = "./terraform/network"
 
   inputs = {
     aws_region = var.aws_region

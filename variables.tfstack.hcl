@@ -3,7 +3,6 @@ variable "aws_region" {
     type        = string
     default     = "eu-central-1"
     sensitive   = false
-    nullable    = false
 }
 
 variable "identity_token" {
