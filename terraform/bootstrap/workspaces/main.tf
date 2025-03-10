@@ -71,7 +71,7 @@ module "database_role" {
 ####################################################################################################
 module "boundary_describe_instances_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "5.48.0"
+  version = "5.53.0"
 
   create_policy = true
   name          = "boundary"
@@ -81,7 +81,7 @@ module "boundary_describe_instances_policy" {
 
 module "boundary_user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-  version = "5.48.0"
+  version = "5.53.0"
 
   create_user = true
   name        = "boundary"
