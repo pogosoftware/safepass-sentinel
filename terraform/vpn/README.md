@@ -3,7 +3,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.78.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | 5.81.0 |
 | <a name="provider_hcp"></a> [hcp](#provider\_hcp) | 0.100.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.6 |
