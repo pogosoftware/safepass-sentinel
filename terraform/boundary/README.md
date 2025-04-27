@@ -8,7 +8,7 @@
 | <a name="provider_hcp"></a> [hcp](#provider\_hcp) | 0.100.0 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
 | <a name="provider_tls"></a> [tls](#provider\_tls) | 4.0.6 |
-| <a name="provider_vault"></a> [vault](#provider\_vault) | 4.5.0 |
+| <a name="provider_vault"></a> [vault](#provider\_vault) | 4.6.0 |
 
 ## Modules
 
