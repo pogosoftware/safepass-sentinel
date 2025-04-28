@@ -7,7 +7,7 @@
 | <a name="provider_hcp"></a> [hcp](#provider\_hcp) | 0.100.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
 | <a name="provider_terraform"></a> [terraform](#provider\_terraform) | n/a |
-| <a name="provider_tfe"></a> [tfe](#provider\_tfe) | 0.60.1 |
+| <a name="provider_tfe"></a> [tfe](#provider\_tfe) | 0.61.0 |
 | <a name="provider_vault"></a> [vault](#provider\_vault) | 4.5.0 |
 
 ## Modules
